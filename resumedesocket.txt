@@ -1,0 +1,168 @@
+Cloud Messaging (FCM).
+📱 Cómo funciona en diferentes estados:
+1. App ABIERTA (Foreground):
+✅ WebSocket conectado → mensajes en tiempo real
+✅ FCM también envía notificaciones
+✅ Las notificaciones se muestran usando flutter_local_notifications
+2. App MINIMIZADA (Background):
+❌ WebSocket desconectado
+✅ FCM funciona automáticamente
+🔔 Recibes notificaciones push del sistema
+El handler onBackgroundMessage procesa los mensajes
+3. App CERRADA COMPLETAMENTE (Terminated):
+❌ WebSocket no funciona
+✅ FCM SIGUE FUNCIONANDO ⭐
+🔔 Sigues recibiendo notificaciones push
+Android maneja las notificaciones automáticamente
+El servicio FLTFireBGExecutor (que viste en los logs) mantiene FCM activo
+🔧 ¿Qué hace que funcione en segundo plano?
+En el código que configuramos:
+_firebaseMessagingBackgroundHandler (main.dart:19-24)
+FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+Este handler se ejecuta incluso cuando la app está cerrada
+AndroidManifest.xml - Configuración FCM
+Permisos de internet y notificaciones
+Canal de notificaciones de alta importancia
+Firebase Service (automático)
+FLTFireMsgService y FLTFireBGExecutor corren en segundo plano
+Estos servicios siguen activos aunque cierres la app
+🧪 Prueba para confirmar:
+Prueba 1: App minimizada
+Abre la app
+Presiona el botón Home (no cierres, solo minimiza)
+Espera 5 segundos
+Deberías recibir notificación 🔔
+Prueba 2: App completamente cerrada
+Abre el menú de apps recientes (botón cuadrado/líneas)
+Desliza la app hacia arriba para cerrarla completamente
+Espera 5-10 segundos
+Deberías seguir recibiendo notificaciones 🔔
+Prueba 3: App nunca abierta después de reiniciar el teléfono
+Reinicia tu teléfono
+NO abras la app
+Asegúrate de que el backend esté corriendo
+Deberías recibir notificaciones (esto puede variar según el fabricante)
+⚠️ Limitaciones según el fabricante:
+Algunos fabricantes Android (Xiaomi, Huawei, Samsung) tienen optimizadores de batería agresivos:
+Xiaomi (MIUI): Puede matar servicios en segundo plano
+Huawei: Requiere configurar "Auto-inicio" en configuración
+Samsung: Generalmente funciona bien
+Motorola (tu caso): Suele funcionar bien
+Si las notificaciones no llegan cuando la app está cerrada, puede que necesites:
+Ve a Configuración → Apps → fcm_ws_app → Batería
+Selecciona "Sin restricciones" o "No optimizar"
+📊 Resumen:
+Estado de la App	WebSocket	FCM Push	Notificaciones
+Abierta ✅	✅ Funciona	✅ Funciona	✅ Sí
+Minimizada 📱	❌ No	✅ Funciona	✅ Sí
+Cerrada 🚫	❌ No	✅ Funciona	✅ Sí
+Reiniciada 🔄	❌ No	✅ Funciona	✅ Sí
+¿Ya compiló la app correctamente? ¿Quieres que te ayude a probar cerrándola completamente? 🚀
+dame un promt para hacer la notifaciones ya el backend esta listo con firebase solo necesito consumir flutter dame un resume de que debo hacer
+🎯 Resumen: Integración de Notificaciones FCM en Flutter
+Ya tienes el backend listo. Aquí está todo lo que necesitas hacer en Flutter:
+✅ CHECKLIST - Lo que YA tienes configurado:
+Backend:
+✅ Firebase Admin SDK inicializado
+✅ Endpoint /register-token para registrar tokens
+✅ Envío automático de mensajes FCM cada 5 segundos
+✅ IP correcta configurada (192.168.1.54)
+Flutter - Archivos de configuración:
+✅ google-services.json en android/app/
+✅ pubspec.yaml con dependencias:
+firebase_core: ^2.0.0
+firebase_messaging: ^14.0.0
+flutter_local_notifications: ^17.0.0
+✅ AndroidManifest.xml con permisos y configuración FCM
+✅ build.gradle.kts con NDK y desugaring configurados
+Flutter - Código:
+✅ Inicialización de Firebase en main()
+✅ Canal de notificaciones creado
+✅ Handlers de mensajes configurados (foreground, background, terminated)
+✅ Registro de token en el backend
+✅ Notificaciones locales configuradas
+🔧 Lo que DEBES HACER AHORA:
+1. Recompilar la app:
+cd mobile/fcm_ws_app
+flutter clean
+flutter pub get
+flutter run
+2. Verificar que el backend esté corriendo:
+cd backend
+node index.js
+Deberías ver:
+✅ Firebase Admin SDK inicializado correctamente
+🚀 Servidor FCM + WebSocket iniciado
+📍 URL: http://localhost:3000
+📱 Proyecto Firebase: monitor-c9751
+3. Probar en el teléfono:
+Paso A: App abierta
+Abre la app
+Verás: "Conectado a WebSocket ✅"
+Verás: "FCM registrado ✅"
+Mensajes apareciendo cada 5 segundos en la lista
+Paso B: App minimizada
+Presiona el botón Home (no cierres la app)
+Espera 5-10 segundos
+Deberías recibir notificaciones push 🔔
+Paso C: App cerrada completamente
+Abre menú de apps recientes (botón cuadrado)
+Desliza la app hacia arriba para cerrarla
+Espera 5-10 segundos
+Deberías seguir recibiendo notificaciones 🔔
+📊 Verificación en el backend:
+Cuando la app se conecta, deberías ver:
+✅ Token registrado: cELx3CI4Ski...
+🔌 Cliente WebSocket conectado
+📡 WebSocket: "hola mundo" enviado a 1 cliente(s)
+📊 Tokens registrados: 1
+🚀 Intentando enviar FCM a 1 dispositivo(s)...
+✅ FCM enviado: 1 éxitos, 0 fallos
+🚨 Solución de problemas:
+Si NO recibes notificaciones:
+Verifica permisos en el teléfono:
+Configuración → Apps → fcm_ws_app → Notificaciones
+Asegúrate de que estén habilitadas
+Verifica optimización de batería:
+Configuración → Apps → fcm_ws_app → Batería
+Selecciona "Sin restricciones"
+Verifica logs del backend:
+¿Dice "✅ FCM enviado: 1 éxitos, 0 fallos"?
+Si dice "1 fallos", copia el error aquí
+Verifica logs de Flutter:
+¿Dice "✅ Token registrado en servidor"?
+¿Aparece "🔔 Mensaje recibido en primer plano"?
+📝 Código clave en tu proyecto:
+Archivos importantes:
+Backend: backend/index.js (líneas 64-82: envío FCM)
+Flutter: mobile/fcm_ws_app/lib/main.dart
+Línea 26-53: Inicialización
+Línea 78-120: Handlers de mensajes
+Línea 122-161: Inicialización FCM y registro de token
+URLs y endpoints:
+Backend: http://192.168.1.54:3000
+WebSocket: ws://192.168.1.54:3000
+Registro: POST http://192.168.1.54:3000/register-token
+🎯 Estado actual del proyecto:
+Componente	Estado	Acción requerida
+Backend Firebase	✅ Listo	Correr con node index.js
+Flutter Firebase Core	✅ Configurado	Ya está en el código
+Flutter FCM	✅ Configurado	Ya está en el código
+Notificaciones locales	✅ Configurado	Ya está en el código
+google-services.json	✅ Agregado	Ya está en android/app/
+AndroidManifest	✅ Configurado	Ya tiene permisos
+build.gradle.kts	✅ Configurado	NDK y desugaring listos
+Compilar app	⚠️ PENDIENTE	flutter run
+Probar notificaciones	⚠️ PENDIENTE	Minimizar app
+🚀 RESUMEN DE 3 PASOS:
+# 1. Asegúrate de que el backend esté corriendo
+cd backend
+node index.js
+
+# 2. Compila la app Flutter
+cd ../mobile/fcm_ws_app
+flutter run
+
+# 3. Prueba minimizando la app
+# (presiona Home en el teléfono y espera las notificaciones)
+¿Necesitas ayuda con algún paso específico o quieres que verifiqu

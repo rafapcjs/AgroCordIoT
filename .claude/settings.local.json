@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter:*)",
+      "Bash(move:*)",
+      "Bash(start ms-settings:developers)",
+      "Bash(paver:*)",
+      "Bash(dir)",
+      "Bash(set CHROME_EXECUTABLE=\"C:\\Users\\RAFAEL CORREDOR G\\.codeium\\windsurf\\ws-browser\\chromium-1155\\chrome-win\\chrome.exe\")",
+      "Bash(dir backend)",
+      "Bash(tree:*)",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\assets\")",
+      "Bash(dir C:UsersRAFAEL\" \"CORREDOR\" \"GDesktopappFD_monitorUnicor_Universidad_De_Cordoba-main)",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\lib\\src\")",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\lib\\src\" /S)",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\lib\\src\\pdf\" /S)",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\lib\\src\\pdf\")",
+      "Bash(dir \"C:\\Users\\RAFAEL CORREDOR G\\Desktop\\app\\FD_monitorUnicor_Universidad_De_Cordoba-main\\lib\\src\\pdf\\reportDiary\")",
+      "Bash(del \"lib\\src\\pdf\\web_pdf_generator.dart\")",
+      "Bash(dir:*)",
+      "Bash(nul)",
+      "Bash(if exist nul echo \"Archivo nul encontrado\" else echo \"Archivo nul no encontrado como archivo regular\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
