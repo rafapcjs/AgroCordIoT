@@ -6,6 +6,7 @@ import 'plants_management_screen.dart';
 import 'sensor_dashboard_screen.dart';
 import 'internal_report_screen.dart';
 import 'monthly_report_screen.dart';
+import 'test_notifications_screen.dart';
 import '../widgets/user_info_widget.dart';
 import '../../providers/auth_provider.dart';
 
@@ -37,7 +38,12 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
-              // Implementar notificaciones
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TestNotificationsScreen(),
+                ),
+              );
             },
           ),
           IconButton(

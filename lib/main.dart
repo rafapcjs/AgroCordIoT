@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:iot/src/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'firebase_options.dart';
 import 'src/core/theme.dart';
 import 'src/presentation/screens/login_screen.dart';
 import 'src/presentation/screens/dashboard_screen.dart';
@@ -13,13 +16,74 @@ import 'src/providers/auth_provider.dart';
 import 'src/data/repositories/auth_repository.dart';
 import 'src/data/network_service.dart';
 import 'src/services/deep_link_service.dart';
+import 'src/services/fcm_service.dart';
+import 'src/services/websocket_service.dart';
 import 'src/presentation/screens/reset_password_screen.dart';
- 
+
+/// Background message handler - must be a top-level function
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print('🔔 Background message: ${message.messageId}');
+  print('📦 Data: ${message.data}');
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Registrar el handler de mensajes en background
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Inicializar Deep Links
   DeepLinkService.initialize();
+
+  // Verificar onboarding
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
+
+  // Inicializar servicios de notificaciones
+  await FCMService().initialize();
+
+  // Conectar WebSocket y configurar handlers
+  final wsService = WebSocketService();
+  final fcmService = FCMService();
+
+  // Configurar callback para mostrar notificaciones cuando lleguen mensajes
+  wsService.onMessageReceived = (data) async {
+    print('📨 WebSocket message received: $data');
+
+    // Mostrar notificación local cuando llegue un mensaje
+    if (data['event'] == 'sensorAlert') {
+      await fcmService.showNotificationFromData(data);
+    }
+  };
+
+  wsService.onConnected = () {
+    print('✅ WebSocket connected');
+  };
+
+  wsService.onDisconnected = () {
+    print('⚠️ WebSocket disconnected');
+  };
+
+  wsService.onError = (error) {
+    print('❌ WebSocket error: $error');
+  };
+
+  await wsService.connect();
+
+  // Si hay token FCM, registrarlo también por WebSocket
+  final fcmToken = fcmService.currentToken;
+  if (fcmToken != null) {
+    await wsService.registerToken(fcmToken);
+  }
 
   runApp(MyApp(onboardingCompleted: onboardingCompleted));
 }
