@@ -108,7 +108,7 @@ class UserService {
   }
 
   Future<UserModel> getAuthenticatedUser(String accessToken) async {
-    final url = Uri.parse('${Constants.baseUrl}/api/auth/authenticated-user');
+    final url = Uri.parse('${Constants.baseUrl}/api/auth/me');
     final response = await http.get(
       url,
       headers: {
@@ -120,7 +120,7 @@ class UserService {
     if (response.statusCode == 200) {
       return UserModel.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load authenticated user');
+      throw Exception('Failed to load authenticated user: ${response.statusCode} - ${response.body}');
     }
   }
 }

@@ -82,10 +82,8 @@ class AuthProvider extends ChangeNotifier {
         _accessToken = authModel.accessToken;
         await _loadUserFromToken(authModel.accessToken);
         
-        // Verificar si es admin
-        if (_currentUser?.role != 'admin') {
-          throw AuthorizationException('Acceso denegado: No tienes permisos de administrador');
-        }
+        // Permitir acceso tanto a admin como a usuarios normales
+        // Ya no se valida solo admin, cada uno tendrá su dashboard correspondiente
 
         await _storage.write(key: _tokenKey, value: authModel.accessToken);
         if (_currentUser != null) {
@@ -167,10 +165,14 @@ class AuthProvider extends ChangeNotifier {
 
   // Método para refrescar la información del usuario desde el servidor
   Future<void> refreshCurrentUser() async {
-    if (_accessToken == null) return;
+    if (_accessToken == null) {
+      debugPrint('❌ Error: No hay token de acceso');
+      throw Exception('No hay token de acceso disponible');
+    }
     
     try {
-      debugPrint('Refrescando información del usuario desde el servidor...');
+      debugPrint('🔄 Refrescando información del usuario desde el servidor...');
+      debugPrint('🔑 Token: ${_accessToken!.substring(0, 20)}...');
       
       // Hacer llamada real al servidor para obtener información actualizada
       final updatedUser = await _userService.getAuthenticatedUser(_accessToken!);
@@ -180,16 +182,20 @@ class AuthProvider extends ChangeNotifier {
       // Guardar en storage local también
       await _storage.write(key: _userKey, value: updatedUser.toJson().toString());
       
-      debugPrint('Usuario actualizado desde servidor: ${updatedUser.name} ${updatedUser.lastName}');
+      debugPrint('✅ Usuario actualizado desde servidor: ${updatedUser.name} ${updatedUser.lastName}');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error refreshing user from server: $e');
+      debugPrint('❌ Error refreshing user from server: $e');
+      debugPrint('🔄 Intentando cargar usuario desde token como fallback...');
+      
       // Si falla la llamada al servidor, intentar recargar desde el token como fallback
       try {
         await _loadUserFromToken(_accessToken!);
+        debugPrint('✅ Usuario cargado desde token exitosamente');
         notifyListeners();
       } catch (tokenError) {
-        debugPrint('Error loading user from token: $tokenError');
+        debugPrint('❌ Error loading user from token: $tokenError');
+        throw Exception('No se pudo cargar la información del usuario: $e');
       }
     }
   }

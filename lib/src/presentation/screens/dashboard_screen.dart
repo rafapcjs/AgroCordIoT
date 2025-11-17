@@ -7,6 +7,7 @@ import 'sensor_dashboard_screen.dart';
 import 'internal_report_screen.dart';
 import 'monthly_report_screen.dart';
 import 'test_notifications_screen.dart';
+import '../../pages/weekly_report_page.dart';
 import '../widgets/user_info_widget.dart';
 import '../../providers/auth_provider.dart';
 
@@ -223,6 +224,27 @@ class DashboardScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => InternalReportScreen(
+                            accessToken: accessToken,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildModernCard(
+                    context,
+                    'Reporte Semanal',
+                    'Análisis de 7 días por monitor',
+                    Icons.calendar_view_week,
+                    const LinearGradient(
+                      colors: [Color(0xFF11998e), Color(0xFF38ef7d)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WeeklyReportPage(
                             accessToken: accessToken,
                           ),
                         ),

@@ -5,6 +5,7 @@ import '../../core/theme.dart';
 import '../../data/models/sensor_data_model.dart';
 import '../../data/services/sensor_service.dart';
 import '../widgets/navigation/report_navigation_drawer.dart';
+import '../../utils/navigation_helper.dart';
 
 class SensorDashboardScreen extends StatefulWidget {
   final String accessToken;
@@ -100,6 +101,18 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
             },
           ),
           ReportNavigationItem(
+            icon: Icons.calendar_view_week,
+            label: 'Reporte semanal',
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed(
+                '/reports/weekly',
+                arguments: {
+                  'accessToken': widget.accessToken,
+                },
+              );
+            },
+          ),
+          ReportNavigationItem(
             icon: Icons.calendar_month_outlined,
             label: 'Reporte mensual',
             onTap: () {
@@ -113,7 +126,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
             icon: Icons.dashboard_outlined,
             label: 'Volver al panel',
             onTap: () {
-              Navigator.of(context).pop();
+              NavigationHelper.navigateToDashboard(context);
             },
           ),
         ],
@@ -375,7 +388,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
               padding: const EdgeInsets.all(16),
               child: sensorData.isEmpty
                   ? _buildNoDataMessage()
-                  : _buildSensorGrid(sensorData),
+                  : _buildSensorGrid(sensorData, deviceId),
             ),
           ],
         ),
@@ -417,13 +430,20 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
     );
   }
 
-  Widget _buildSensorGrid(List<SensorData> sensorData) {
-    final sensorTypes = [
-      'temperature',
-      'humidity',
-      'solar_radiation',
-      'soil_humidity',
-    ];
+  Widget _buildSensorGrid(List<SensorData> sensorData, String deviceId) {
+    // ESP32_2 (Externo) no tiene sensor de humedad de suelo
+    final sensorTypes = deviceId == 'ESP32_2'
+        ? [
+            'temperature',
+            'humidity',
+            'solar_radiation',
+          ]
+        : [
+            'temperature',
+            'humidity',
+            'solar_radiation',
+            'soil_humidity',
+          ];
 
     return GridView.builder(
       shrinkWrap: true,

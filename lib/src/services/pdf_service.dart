@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:pdf/pdf.dart';
+ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 import 'package:open_file/open_file.dart';
 import '../data/models/daily_report_model.dart';
+import '../models/report.dart';
 
 class PdfService {
   static Future<File?> generateReportPdf(DailyReportModel report) async {
@@ -126,9 +126,9 @@ class PdfService {
   }
 
   static pw.Widget _buildSimpleDailyReport(DailyReportModel report) {
-    const textStyle = pw.TextStyle(fontSize: 12);
-    const headerStyle = pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold);
-    const subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
+    final textStyle = pw.TextStyle(fontSize: 12);
+    final headerStyle = pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold);
+    final subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
     
     // Filtrar datos válidos
     final validRows = report.rows.where((hourData) => 
@@ -190,15 +190,15 @@ class PdfService {
               children: [
                 pw.Padding(
                   padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Parámetro', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  child: pw.Text('Parámetro', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                 ),
                 pw.Padding(
                   padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Valor', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  child: pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                 ),
                 pw.Padding(
                   padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Unidad', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  child: pw.Text('Unidad', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                 ),
               ],
             ),
@@ -275,19 +275,19 @@ class PdfService {
                 children: [
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Hora', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('Hora', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Temp. (°C)', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('Temp. (°C)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Hum. (%)', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('Hum. (%)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                   pw.Padding(
                     padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Rad. (W/m²)', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    child: pw.Text('Rad. (W/m²)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                   ),
                 ],
               ),
@@ -360,6 +360,204 @@ class PdfService {
     );
   }
   
+  // Método para generar reporte semanal
+  static Future<File?> generateWeeklyReportPdf(WeeklyReport report, String deviceId) async {
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(40),
+          build: (pw.Context context) {
+            return _buildWeeklyReport(report, deviceId);
+          },
+        ),
+      );
+
+      final fileName = 'reporte_semanal_${deviceId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      
+      if (kIsWeb) {
+        final bytes = await pdf.save();
+        final tempDir = Directory.systemTemp;
+        final file = File('${tempDir.path}/$fileName');
+        await file.writeAsBytes(bytes);
+        return file;
+      } else {
+        try {
+          final appDir = await getApplicationDocumentsDirectory();
+          final file = File('${appDir.path}/$fileName');
+          
+          if (!await appDir.exists()) {
+            await appDir.create(recursive: true);
+          }
+          
+          final bytes = await pdf.save();
+          await file.writeAsBytes(bytes);
+          
+          if (await file.exists()) {
+            debugPrint('PDF semanal generado: ${file.path}');
+            return file;
+          }
+          return null;
+        } catch (e) {
+          debugPrint('Error guardando PDF semanal: $e');
+          return null;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error generando PDF semanal: $e');
+      return null;
+    }
+  }
+
+  static pw.Widget _buildWeeklyReport(WeeklyReport report, String deviceId) {
+    final textStyle = pw.TextStyle(fontSize: 12);
+    final subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
+    final boldStyle = pw.TextStyle(fontWeight: pw.FontWeight.bold);
+    final deviceName = deviceId == 'ESP32_1' ? 'Monitor Interno' : 'Monitor Externo';
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        // Header
+        pw.Container(
+          width: double.infinity,
+          padding: const pw.EdgeInsets.all(20),
+          decoration: pw.BoxDecoration(
+            color: PdfColors.green700,
+            borderRadius: pw.BorderRadius.circular(10),
+          ),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('REPORTE SEMANAL', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+              pw.SizedBox(height: 5),
+              pw.Text('Monitoreo Ambiental IoT - AgroCordIoT', style: pw.TextStyle(fontSize: 12, color: PdfColors.white)),
+              pw.SizedBox(height: 10),
+              pw.Text('Monitor: $deviceName', style: pw.TextStyle(fontSize: 12, color: PdfColors.white, fontWeight: pw.FontWeight.bold)),
+              pw.Text('Fecha: ${DateTime.now().toString().substring(0, 10)}', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey300)),
+            ],
+          ),
+        ),
+        
+        pw.SizedBox(height: 20),
+        
+        // Resumen
+        pw.Text('RESUMEN GENERAL', style: subHeaderStyle),
+        pw.SizedBox(height: 10),
+        
+        if (report.sensors.isNotEmpty)
+          pw.Table(
+            border: pw.TableBorder.all(),
+            children: [
+              pw.TableRow(
+                decoration: const pw.BoxDecoration(color: PdfColors.green50),
+                children: [
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Sensor', style: boldStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Promedio', style: boldStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Unidades', style: boldStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Muestras', style: boldStyle)),
+                ],
+              ),
+              ...report.sensors.map((sensor) => pw.TableRow(
+                children: [
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(_getSensorDisplayName(sensor.sensor), style: textStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.average.toStringAsFixed(2), style: textStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.units, style: textStyle)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.samples.toString(), style: textStyle)),
+                ],
+              )),
+            ],
+          ),
+        
+        pw.SizedBox(height: 20),
+        
+        // Detalles diarios
+        if (report.daily.isNotEmpty) ...[
+          pw.Text('DETALLES DIARIOS', style: subHeaderStyle),
+          pw.SizedBox(height: 10),
+          ..._sortDaysByWeek(report.daily).map((daily) => pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 15),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Container(
+                  padding: const pw.EdgeInsets.all(8),
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                  child: pw.Text('${daily.day} - ${_formatDatePdf(daily.date)}', style: boldStyle),
+                ),
+                if (daily.sensors.isNotEmpty)
+                  pw.Table(
+                    border: pw.TableBorder.all(),
+                    children: [
+                      pw.TableRow(
+                        decoration: const pw.BoxDecoration(color: PdfColors.grey100),
+                        children: [
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('Sensor', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('Promedio', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('Unidades', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold))),
+                        ],
+                      ),
+                      ...daily.sensors.map((sensor) => pw.TableRow(
+                        children: [
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(_getSensorDisplayName(sensor.sensor), style: pw.TextStyle(fontSize: 10))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(sensor.average.toStringAsFixed(2), style: pw.TextStyle(fontSize: 10))),
+                          pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(sensor.units, style: pw.TextStyle(fontSize: 10))),
+                        ],
+                      )),
+                    ],
+                  )
+                else
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(10),
+                    child: pw.Text('Sin datos', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
+                  ),
+              ],
+            ),
+          )),
+        ],
+      ],
+    );
+  }
+
+  static List<DailyReport> _sortDaysByWeek(List<DailyReport> days) {
+    final dayOrder = {
+      'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4,
+      'Viernes': 5, 'Sábado': 6, 'Domingo': 7,
+    };
+    final sortedList = List<DailyReport>.from(days);
+    sortedList.sort((a, b) => (dayOrder[a.day] ?? 999).compareTo(dayOrder[b.day] ?? 999));
+    return sortedList;
+  }
+
+  static String _formatDatePdf(String date) {
+    try {
+      final parts = date.split('T')[0].split('-');
+      if (parts.length >= 3) {
+        final months = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        return '${parts[2]} ${months[int.parse(parts[1])]} ${parts[0]}';
+      }
+    } catch (e) {
+      return date;
+    }
+    return date;
+  }
+
+  static String _getSensorDisplayName(String sensorType) {
+    final nameMap = {
+      'temperature': 'Temperatura',
+      'humidity': 'Humedad',
+      'solar_radiation': 'Radiación Solar',
+      'ph': 'pH del Suelo',
+      'ec': 'Conductividad Eléctrica',
+      'soil_moisture': 'Humedad del Suelo',
+      'light': 'Luz',
+      'pressure': 'Presión Atmosférica',
+    };
+    return nameMap[sensorType] ?? sensorType;
+  }
+
   // Helper method for safe number formatting
   static String _safeFormatNumber(double? value, int decimals) {
     if (value == null || value.isNaN || value.isInfinite) {

@@ -5,6 +5,7 @@ import '../../data/services/daily_report_service.dart';
 import '../../services/pdf_service.dart';
 import '../widgets/navigation/report_navigation_drawer.dart';
 import '../widgets/buttonsPdf/buttons_pdf.dart';
+import '../../utils/navigation_helper.dart';
 
 class InternalReportScreen extends StatefulWidget {
   final String accessToken;
@@ -146,6 +147,18 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
             },
           ),
           ReportNavigationItem(
+            icon: Icons.calendar_view_week,
+            label: 'Reporte semanal',
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed(
+                '/reports/weekly',
+                arguments: {
+                  'accessToken': widget.accessToken,
+                },
+              );
+            },
+          ),
+          ReportNavigationItem(
             icon: Icons.calendar_month_outlined,
             label: 'Reporte mensual',
             onTap: () {
@@ -161,7 +174,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
             icon: Icons.dashboard_outlined,
             label: 'Volver al panel',
             onTap: () {
-              Navigator.of(context).pop();
+              NavigationHelper.navigateToDashboard(context);
             },
           ),
         ],

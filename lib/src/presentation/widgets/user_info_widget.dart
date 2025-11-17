@@ -602,8 +602,14 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
             GradientButton(
               text: 'Cerrar Sesión',
               onPressed: () {
+                // Cerrar diálogo primero
                 Navigator.of(context).pop();
+                
+                // Ejecutar logout que limpia token, user data y cambia el estado a unauthenticated
                 widget.onLogout();
+                
+                // El AuthWrapper en main.dart detectará el cambio de estado automáticamente
+                // y mostrará el LoginScreen porque authProvider.state será AuthState.unauthenticated
               },
               gradient: const LinearGradient(
                 colors: [Color(0xFFEF4444), Color(0xFFDC2626)],

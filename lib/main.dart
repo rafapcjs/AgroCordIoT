@@ -12,6 +12,8 @@ import 'src/presentation/screens/dashboard_screen.dart';
 import 'src/presentation/screens/internal_report_screen.dart';
 import 'src/presentation/screens/monthly_report_screen.dart';
 import 'src/presentation/screens/sensor_dashboard_screen.dart';
+import 'src/pages/weekly_report_page.dart';
+import 'src/pages/dashboard_user_page.dart';
 import 'src/providers/auth_provider.dart';
 import 'src/data/repositories/auth_repository.dart';
 import 'src/data/network_service.dart';
@@ -150,6 +152,16 @@ class MyApp extends StatelessWidget {
             final token = args['accessToken'] as String? ?? '';
             return MonthlyReportScreen(accessToken: token);
           },
+          '/reports/weekly': (context) {
+            final args = (ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?) ?? {};
+            final token = args['accessToken'] as String? ?? '';
+            return WeeklyReportPage(accessToken: token);
+          },
+          '/dashboard/user': (context) {
+            final args = (ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?) ?? {};
+            final token = args['accessToken'] as String? ?? '';
+            return DashboardUserPage(accessToken: token);
+          },
         },
       ),
     );
@@ -174,9 +186,19 @@ class AuthWrapper extends StatelessWidget {
               ),
             );
           case AuthState.authenticated:
-            return DashboardScreen(
-              accessToken: authProvider.accessToken ?? '',
-            );
+            // Verificar el rol del usuario y redirigir al dashboard correspondiente
+            final userRole = authProvider.currentUser?.role ?? '';
+            
+            if (userRole == 'admin') {
+              return DashboardScreen(
+                accessToken: authProvider.accessToken ?? '',
+              );
+            } else {
+              // Para usuarios normales, mostrar el dashboard de usuario
+              return DashboardUserPage(
+                accessToken: authProvider.accessToken ?? '',
+              );
+            }
           case AuthState.unauthenticated:
           case AuthState.error:
             return const LoginScreen();

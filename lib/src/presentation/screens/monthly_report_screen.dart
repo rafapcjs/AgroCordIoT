@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../utils/navigation_helper.dart';
 import '../../data/models/monthly_report_model.dart';
 import '../../data/services/monthly_report_service.dart';
 import '../widgets/navigation/report_navigation_drawer.dart';
@@ -139,6 +140,18 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
             },
           ),
           ReportNavigationItem(
+            icon: Icons.calendar_view_week,
+            label: 'Reporte semanal',
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed(
+                '/reports/weekly',
+                arguments: {
+                  'accessToken': widget.accessToken,
+                },
+              );
+            },
+          ),
+          ReportNavigationItem(
             icon: Icons.calendar_month_outlined,
             label: 'Reporte mensual',
             onTap: () {
@@ -152,7 +165,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
             icon: Icons.dashboard_outlined,
             label: 'Volver al panel',
             onTap: () {
-              Navigator.of(context).pop();
+              NavigationHelper.navigateToDashboard(context);
             },
           ),
         ],
