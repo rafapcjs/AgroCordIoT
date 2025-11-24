@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:open_file/open_file.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../models/report.dart';
 import '../services/report_service.dart';
 import '../services/pdf_service.dart';
@@ -487,6 +488,8 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
       padding: const EdgeInsets.all(16),
       children: [
         _buildSummarySection(),
+        const SizedBox(height: 24),
+        _buildChartsSection(),
         const SizedBox(height: 24),
         _buildDailySection(),
       ],
@@ -1052,5 +1055,319 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
     } else {
       return Icons.sensors;
     }
+  }
+
+  // Sección de gráficas
+  Widget _buildChartsSection() {
+    if (report == null || report!.sensors.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Extraer datos para las gráficas
+    final tempData = _extractSensorData('temperature');
+    final humidityData = _extractSensorData('humidity');
+    final solarData = _extractSensorData('solar_radiation');
+    final soilMoistureData = _extractSensorData('soil_moisture');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green[700]!, Colors.green[500]!],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.show_chart, color: Colors.white, size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Gráficas de Tendencias',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Evolución de datos durante la semana',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        
+        // Gráfica de Temperatura
+        if (tempData.isNotEmpty) _buildIndividualChart(
+          title: 'Temperatura (°C)',
+          icon: Icons.thermostat,
+          color: Colors.red,
+          data: tempData,
+          minY: _getMinValue(tempData) - 2,
+          maxY: _getMaxValue(tempData) + 2,
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Gráfica de Humedad
+        if (humidityData.isNotEmpty) _buildIndividualChart(
+          title: 'Humedad (%)',
+          icon: Icons.water_drop,
+          color: Colors.blue,
+          data: humidityData,
+          minY: _getMinValue(humidityData) - 5,
+          maxY: _getMaxValue(humidityData) + 5,
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Gráfica de Radiación Solar
+        if (solarData.isNotEmpty) _buildIndividualChart(
+          title: 'Radiación Solar (W/m²)',
+          icon: Icons.wb_sunny,
+          color: Colors.orange,
+          data: solarData,
+          minY: 0,
+          maxY: _getMaxValue(solarData) * 1.1,
+        ),
+        
+        // Gráfica de Humedad de Suelo (solo para Monitor Interno - ESP32_1)
+        if (selectedDevice == 'ESP32_1' && soilMoistureData.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _buildIndividualChart(
+            title: 'Humedad del Suelo (%)',
+            icon: Icons.grass,
+            color: Colors.green,
+            data: soilMoistureData,
+            minY: _getMinValue(soilMoistureData) - 5,
+            maxY: _getMaxValue(soilMoistureData) + 5,
+          ),
+        ],
+      ],
+    );
+  }
+
+  List<MapEntry<int, double>> _extractSensorData(String sensorType) {
+    if (report == null || report!.daily.isEmpty) return [];
+    
+    final sortedDays = _sortDaysByWeek(report!.daily);
+    final data = <MapEntry<int, double>>[];
+    
+    for (var i = 0; i < sortedDays.length; i++) {
+      final day = sortedDays[i];
+      final sensor = day.sensors.firstWhere(
+        (s) => s.sensor.toLowerCase() == sensorType.toLowerCase(),
+        orElse: () => SensorSummary(
+          sensor: sensorType,
+          average: 0,
+          samples: 0,
+          units: '',
+        ),
+      );
+      
+      if (sensor.samples > 0) {
+        data.add(MapEntry(i, sensor.average));
+      }
+    }
+    
+    return data;
+  }
+
+  double _getMinValue(List<MapEntry<int, double>> data) {
+    if (data.isEmpty) return 0;
+    return data.map((e) => e.value).reduce((a, b) => a < b ? a : b);
+  }
+
+  double _getMaxValue(List<MapEntry<int, double>> data) {
+    if (data.isEmpty) return 100;
+    return data.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+  }
+
+  Widget _buildIndividualChart({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required List<MapEntry<int, double>> data,
+    required double minY,
+    required double maxY,
+  }) {
+    if (data.isEmpty) return const SizedBox.shrink();
+
+    final spots = data.map((e) => FlSpot(e.key.toDouble(), e.value)).toList();
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: true,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.withOpacity(0.2),
+                      strokeWidth: 1,
+                    );
+                  },
+                  getDrawingVerticalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.withOpacity(0.2),
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                titlesData: FlTitlesData(
+                  show: true,
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      interval: 1,
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+                        if (value.toInt() >= 0 && value.toInt() < days.length) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              days[value.toInt()],
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                              ),
+                            ),
+                          );
+                        }
+                        return const Text('');
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 45,
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        return Text(
+                          value >= 1000 
+                              ? '${(value / 1000).toStringAsFixed(1)}k'
+                              : value.toStringAsFixed(0),
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(
+                    color: Colors.grey.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                minX: 0,
+                maxX: 6,
+                minY: minY,
+                maxY: maxY,
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    color: color,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                          radius: 5,
+                          color: Colors.white,
+                          strokeWidth: 2,
+                          strokeColor: color,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          color.withOpacity(0.3),
+                          color.withOpacity(0.05),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
