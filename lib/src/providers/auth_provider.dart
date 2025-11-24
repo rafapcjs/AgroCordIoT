@@ -19,7 +19,11 @@ enum AuthState {
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
   final UserService _userService = UserService();
-  static const FlutterSecureStorage _storage = FlutterSecureStorage();
+  static const FlutterSecureStorage _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
   
   static const String _tokenKey = 'access_token';
   static const String _userKey = 'user_data';
@@ -49,7 +53,7 @@ class AuthProvider extends ChangeNotifier {
       _state = AuthState.loading;
       notifyListeners();
 
-      final token = await _storage.read(key: _tokenKey);
+      final token = await _safeRead(_tokenKey);
       
       if (token != null && token.isNotEmpty) {
         if (!JwtDecoder.isExpired(token)) {
@@ -63,11 +67,49 @@ class AuthProvider extends ChangeNotifier {
         _state = AuthState.unauthenticated;
       }
     } catch (e) {
-      _state = AuthState.error;
-      _errorMessage = e.toString();
+      debugPrint('Error inicializando auth: $e');
+      _state = AuthState.unauthenticated;
+      _errorMessage = null; // No mostrar error al usuario en inicialización
     }
     
     notifyListeners();
+  }
+
+  /// Limpia el storage corrupto
+  Future<void> _clearCorruptedStorage() async {
+    try {
+      await _storage.deleteAll();
+      debugPrint('Storage limpiado exitosamente');
+    } catch (e) {
+      debugPrint('Error limpiando storage: $e');
+    }
+  }
+
+  /// Escribe de forma segura en el storage
+  Future<void> _safeWrite(String key, String value) async {
+    try {
+      await _storage.write(key: key, value: value);
+    } catch (e) {
+      debugPrint('Error escribiendo en storage ($key): $e');
+      // Intentar limpiar y reintentar una vez
+      try {
+        await _clearCorruptedStorage();
+        await _storage.write(key: key, value: value);
+      } catch (retryError) {
+        debugPrint('Error en reintento de escritura: $retryError');
+      }
+    }
+  }
+
+  /// Lee de forma segura del storage
+  Future<String?> _safeRead(String key) async {
+    try {
+      return await _storage.read(key: key);
+    } catch (e) {
+      debugPrint('Error leyendo storage ($key): $e');
+      await _clearCorruptedStorage();
+      return null;
+    }
   }
 
   Future<bool> login(String username, String password) async {
@@ -90,9 +132,9 @@ class AuthProvider extends ChangeNotifier {
         // Permitir acceso tanto a admin como a usuarios normales
         // Ya no se valida solo admin, cada uno tendrá su dashboard correspondiente
 
-        await _storage.write(key: _tokenKey, value: authModel.accessToken);
+        await _safeWrite(_tokenKey, authModel.accessToken);
         if (_currentUser != null) {
-          await _storage.write(key: _userKey, value: _currentUser!.toJson().toString());
+          await _safeWrite(_userKey, _currentUser!.toJson().toString());
         }
 
         _state = AuthState.authenticated;
@@ -182,7 +224,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       
       // Guardar en storage local también
-      _storage.write(key: _userKey, value: updatedUser.toJson().toString());
+      _safeWrite(_userKey, updatedUser.toJson().toString());
     }
   }
 
@@ -206,7 +248,7 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = updatedUser;
       
       // Guardar en storage local también
-      await _storage.write(key: _userKey, value: updatedUser.toJson().toString());
+      await _safeWrite(_userKey, updatedUser.toJson().toString());
       
       debugPrint('✅ Usuario actualizado desde servidor: ${updatedUser.name} ${updatedUser.lastName}');
       notifyListeners();
@@ -243,7 +285,7 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = serverUser;
         
         // Guardar en storage local
-        await _storage.write(key: _userKey, value: serverUser.toJson().toString());
+        await _safeWrite(_userKey, serverUser.toJson().toString());
         
         // Notificar cambios
         notifyListeners();
@@ -295,7 +337,7 @@ class AuthProvider extends ChangeNotifier {
       _currentUser = updatedUser;
       
       // Guardar en storage local también
-      _storage.write(key: _userKey, value: updatedUser.toJson().toString());
+      _safeWrite(_userKey, updatedUser.toJson().toString());
       
       // Notificar inmediatamente para refrescar la UI
       notifyListeners();

@@ -556,19 +556,19 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
               ),
             ] else ...[
               Text(
-                'Sin datos',
+                '0.0${_getUnitForSensorType(sensorType)}',
                 style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textTertiary.withValues(alpha: 0.6),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: config.color.withValues(alpha: 0.6),
                 ),
               ),
               const SizedBox(height: 2),
               Text(
-                'No disponible',
+                'Sin lectura reciente',
                 style: TextStyle(
                   fontSize: 8,
-                  color: AppTheme.textTertiary.withValues(alpha: 0.5),
+                  color: AppTheme.textTertiary.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -610,6 +610,20 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
           icon: Icons.sensors,
           color: AppTheme.textSecondary,
         );
+    }
+  }
+
+  String _getUnitForSensorType(String sensorType) {
+    switch (sensorType) {
+      case 'temperature':
+        return '°C';
+      case 'humidity':
+      case 'soil_humidity':
+        return '%';
+      case 'solar_radiation':
+        return ' W/m²';
+      default:
+        return '';
     }
   }
 
