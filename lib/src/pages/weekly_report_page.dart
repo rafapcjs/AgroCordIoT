@@ -248,20 +248,6 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
             tooltip: 'Volver',
           ),
           IconButton(
-            icon: isGeneratingPdf 
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : const Icon(Icons.picture_as_pdf, color: Colors.white),
-            onPressed: isGeneratingPdf ? null : _generatePdf,
-            tooltip: 'Descargar PDF',
-          ),
-          IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: loadReport,
             tooltip: 'Actualizar',
@@ -492,6 +478,9 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
         _buildChartsSection(),
         const SizedBox(height: 24),
         _buildDailySection(),
+        const SizedBox(height: 24),
+        _buildPdfDownloadButton(),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -740,6 +729,39 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
     });
 
     return sortedList;
+  }
+
+  Widget _buildPdfDownloadButton() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton.icon(
+        onPressed: isGeneratingPdf ? null : _generatePdf,
+        icon: isGeneratingPdf
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Icon(Icons.picture_as_pdf, size: 28),
+        label: Text(
+          isGeneratingPdf ? 'Generando PDF...' : 'Descargar Reporte PDF',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF4CAF50),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 4,
+        ),
+      ),
+    );
   }
 
   Widget _buildDailyExpansionTile(DailyReport daily) {

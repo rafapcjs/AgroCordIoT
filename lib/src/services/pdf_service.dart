@@ -340,11 +340,11 @@ class PdfService {
       final pdf = pw.Document();
 
       pdf.addPage(
-        pw.Page(
+        pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
           margin: const pw.EdgeInsets.all(40),
           build: (pw.Context context) {
-            return _buildWeeklyReport(report, deviceId);
+            return _buildWeeklyReportWidgets(report, deviceId);
           },
         ),
       );
@@ -385,73 +385,78 @@ class PdfService {
     }
   }
 
-  static pw.Widget _buildWeeklyReport(WeeklyReport report, String deviceId) {
+  static List<pw.Widget> _buildWeeklyReportWidgets(WeeklyReport report, String deviceId) {
     final textStyle = pw.TextStyle(fontSize: 12);
     final subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
     final boldStyle = pw.TextStyle(fontWeight: pw.FontWeight.bold);
     final deviceName = deviceId == 'ESP32_1' ? 'Monitor Interno' : 'Monitor Externo';
 
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        // Header
-        pw.Container(
-          width: double.infinity,
-          padding: const pw.EdgeInsets.all(20),
-          decoration: pw.BoxDecoration(
-            color: PdfColors.green700,
-            borderRadius: pw.BorderRadius.circular(10),
-          ),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text('REPORTE SEMANAL', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
-              pw.SizedBox(height: 5),
-              pw.Text('Monitoreo Ambiental IoT - AgroCordIoT', style: pw.TextStyle(fontSize: 12, color: PdfColors.white)),
-              pw.SizedBox(height: 10),
-              pw.Text('Monitor: $deviceName', style: pw.TextStyle(fontSize: 12, color: PdfColors.white, fontWeight: pw.FontWeight.bold)),
-              pw.Text('Fecha: ${DateTime.now().toString().substring(0, 10)}', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey300)),
-            ],
-          ),
+    List<pw.Widget> widgets = [
+      // Header
+      pw.Container(
+        width: double.infinity,
+        padding: const pw.EdgeInsets.all(20),
+        decoration: pw.BoxDecoration(
+          color: PdfColors.green700,
+          borderRadius: pw.BorderRadius.circular(10),
         ),
-        
-        pw.SizedBox(height: 20),
-        
-        // Resumen
-        pw.Text('RESUMEN GENERAL', style: subHeaderStyle),
-        pw.SizedBox(height: 10),
-        
-        if (report.sensors.isNotEmpty)
-          pw.Table(
-            border: pw.TableBorder.all(),
-            children: [
-              pw.TableRow(
-                decoration: const pw.BoxDecoration(color: PdfColors.green50),
-                children: [
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Sensor', style: boldStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Promedio', style: boldStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Unidades', style: boldStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Muestras', style: boldStyle)),
-                ],
-              ),
-              ...report.sensors.map((sensor) => pw.TableRow(
-                children: [
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(_getSensorDisplayName(sensor.sensor), style: textStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.average.toStringAsFixed(2), style: textStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.units, style: textStyle)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.samples.toString(), style: textStyle)),
-                ],
-              )),
-            ],
-          ),
-        
-        pw.SizedBox(height: 20),
-        
-        // Detalles diarios
-        if (report.daily.isNotEmpty) ...[
-          pw.Text('DETALLES DIARIOS', style: subHeaderStyle),
-          pw.SizedBox(height: 10),
-          ..._sortDaysByWeek(report.daily).map((daily) => pw.Container(
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text('REPORTE SEMANAL', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+            pw.SizedBox(height: 5),
+            pw.Text('Monitoreo Ambiental IoT - AgroCordIoT', style: pw.TextStyle(fontSize: 12, color: PdfColors.white)),
+            pw.SizedBox(height: 10),
+            pw.Text('Monitor: $deviceName', style: pw.TextStyle(fontSize: 12, color: PdfColors.white, fontWeight: pw.FontWeight.bold)),
+            pw.Text('Fecha: ${DateTime.now().toString().substring(0, 10)}', style: pw.TextStyle(fontSize: 10, color: PdfColors.grey300)),
+          ],
+        ),
+      ),
+      
+      pw.SizedBox(height: 20),
+      
+      // Resumen
+      pw.Text('RESUMEN GENERAL', style: subHeaderStyle),
+      pw.SizedBox(height: 10),
+    ];
+
+    if (report.sensors.isNotEmpty) {
+      widgets.add(
+        pw.Table(
+          border: pw.TableBorder.all(),
+          children: [
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.green50),
+              children: [
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Sensor', style: boldStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Promedio', style: boldStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Unidades', style: boldStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text('Muestras', style: boldStyle)),
+              ],
+            ),
+            ...report.sensors.map((sensor) => pw.TableRow(
+              children: [
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(_getSensorDisplayName(sensor.sensor), style: textStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.average.toStringAsFixed(2), style: textStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.units, style: textStyle)),
+                pw.Padding(padding: const pw.EdgeInsets.all(8), child: pw.Text(sensor.samples.toString(), style: textStyle)),
+              ],
+            )),
+          ],
+        ),
+      );
+    }
+    
+    widgets.add(pw.SizedBox(height: 20));
+    
+    // Detalles diarios
+    if (report.daily.isNotEmpty) {
+      widgets.add(pw.Text('DETALLES DIARIOS', style: subHeaderStyle));
+      widgets.add(pw.SizedBox(height: 10));
+      
+      for (var daily in _sortDaysByWeek(report.daily)) {
+        widgets.add(
+          pw.Container(
             margin: const pw.EdgeInsets.only(bottom: 15),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -489,10 +494,12 @@ class PdfService {
                   ),
               ],
             ),
-          )),
-        ],
-      ],
-    );
+          ),
+        );
+      }
+    }
+
+    return widgets;
   }
 
   static List<DailyReport> _sortDaysByWeek(List<DailyReport> days) {
@@ -526,6 +533,7 @@ class PdfService {
       'ph': 'pH del Suelo',
       'ec': 'Conductividad Eléctrica',
       'soil_moisture': 'Humedad del Suelo',
+      'soil_humidity': 'Humedad del Suelo',
       'light': 'Luz',
       'pressure': 'Presión Atmosférica',
     };
