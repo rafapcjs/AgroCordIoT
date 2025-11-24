@@ -78,18 +78,18 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: ReportNavigationDrawer(
-        selectedLabel: 'Panel de Sensores',
+        selectedLabel: 'Ver Sensores en Tiempo Real',
         items: [
           ReportNavigationItem(
             icon: Icons.sensors,
-            label: 'Panel de Sensores',
+            label: 'Ver Sensores en Tiempo Real',
             onTap: () {
               // Ya estamos en esta pantalla
             },
           ),
           ReportNavigationItem(
             icon: Icons.assessment_outlined,
-            label: 'Reporte diario',
+            label: 'Reporte del Día',
             onTap: () {
               Navigator.of(context).pushReplacementNamed(
                 '/reports/internal',
@@ -102,7 +102,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
           ),
           ReportNavigationItem(
             icon: Icons.calendar_view_week,
-            label: 'Reporte semanal',
+            label: 'Reporte de la Semana',
             onTap: () {
               Navigator.of(context).pushReplacementNamed(
                 '/reports/weekly',
@@ -114,7 +114,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
           ),
           ReportNavigationItem(
             icon: Icons.calendar_month_outlined,
-            label: 'Reporte mensual',
+            label: 'Reporte del Mes',
             onTap: () {
               Navigator.of(context).pushReplacementNamed(
                 '/reports/monthly',
@@ -124,7 +124,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
           ),
           ReportNavigationItem(
             icon: Icons.dashboard_outlined,
-            label: 'Volver al panel',
+            label: 'Volver al Inicio',
             onTap: () {
               NavigationHelper.navigateToDashboard(context);
             },

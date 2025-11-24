@@ -16,7 +16,7 @@ class DashboardUserPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'Dashboard',
+          'Panel de Control',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -62,8 +62,8 @@ class DashboardUserPage extends StatelessWidget {
           children: [
             _buildDashboardCard(
               context: context,
-              title: 'Sensores en Tiempo',
-              subtitle: 'Monitorea datos de',
+              title: 'Sensores en Tiempo Real',
+              subtitle: 'Monitorea datos en vivo',
               icon: Icons.sensors,
               gradientColors: [const Color(0xFF66BB6A), const Color(0xFF43A047)],
               onTap: () {
@@ -75,8 +75,8 @@ class DashboardUserPage extends StatelessWidget {
             ),
             _buildDashboardCard(
               context: context,
-              title: 'Reporte Mensual',
-              subtitle: 'Analiza datos mensuales',
+              title: 'Reporte del Mes',
+              subtitle: 'Análisis mensual completo',
               icon: Icons.bar_chart,
               gradientColors: [const Color(0xFF81C784), const Color(0xFF66BB6A)],
               onTap: () {
@@ -88,8 +88,8 @@ class DashboardUserPage extends StatelessWidget {
             ),
             _buildDashboardCard(
               context: context,
-              title: 'Reporte Diario',
-              subtitle: 'Analiza sensores internos y',
+              title: 'Reporte del Día',
+              subtitle: 'Datos por día y monitor',
               icon: Icons.bar_chart_outlined,
               gradientColors: [const Color(0xFF4CAF50), const Color(0xFF388E3C)],
               onTap: () {
@@ -104,8 +104,8 @@ class DashboardUserPage extends StatelessWidget {
             ),
             _buildDashboardCard(
               context: context,
-              title: 'Reporte Semanal',
-              subtitle: 'Análisis de 7 días por',
+              title: 'Reporte de la Semana',
+              subtitle: 'Análisis semanal detallado',
               icon: Icons.calendar_view_week,
               gradientColors: [const Color(0xFF8BC34A), const Color(0xFF689F38)],
               onTap: () {

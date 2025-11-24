@@ -126,6 +126,7 @@ class PdfService {
   }
 
   static List<pw.Widget> _buildSimpleDailyReportWidgets(DailyReportModel report) {
+    final deviceName = report.deviceId == 'ESP32_1' ? 'Monitor Interno' : 'Monitor Externo';
     final textStyle = pw.TextStyle(fontSize: 12);
     final headerStyle = pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold);
     final subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
@@ -161,7 +162,7 @@ class PdfService {
         // Información del reporte
         pw.Text('INFORMACIÓN DEL REPORTE', style: subHeaderStyle),
         pw.SizedBox(height: 10),
-        pw.Text('Dispositivo: ${report.deviceId}', style: textStyle),
+        pw.Text('Dispositivo: $deviceName', style: textStyle),
         pw.Text('Fecha: ${report.date}', style: textStyle),
         pw.Text('Generado: ${DateTime.now().toString().substring(0, 16)}', style: textStyle),
         pw.Text('Total de lecturas válidas: ${validRows.length}', style: textStyle),

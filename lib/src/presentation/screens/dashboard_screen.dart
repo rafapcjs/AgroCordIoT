@@ -182,8 +182,8 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   _buildModernCard(
                     context,
-                    'Reporte Mensual',
-                    'Analiza datos mensuales por dispositivo',
+                    'Reporte del Mes',
+                    'Análisis mensual completo',
                     Icons.analytics_outlined,
                     const LinearGradient(
                       colors: [Color(0xFF66BB6A), Color(0xFF43A047)],
@@ -203,8 +203,8 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   _buildModernCard(
                     context,
-                    'Reporte Diario',
-                    'Analiza sensores internos y externos',
+                    'Reporte del Día',
+                    'Datos por día y monitor',
                     Icons.assessment_outlined,
                     const LinearGradient(
                       colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
@@ -224,8 +224,8 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   _buildModernCard(
                     context,
-                    'Reporte Semanal',
-                    'Análisis de 7 días por monitor',
+                    'Reporte de la Semana',
+                    'Análisis semanal detallado',
                     Icons.calendar_view_week,
                     const LinearGradient(
                       colors: [Color(0xFF8BC34A), Color(0xFF689F38)],

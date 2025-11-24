@@ -138,6 +138,8 @@ class MonthlyReportTemplate {
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
 
+    final deviceName = report.deviceId == 'ESP32_1' ? 'Monitor Interno' : 'Monitor Externo';
+
     final stats = _calculateStats(report);
     
     debugPrint('Construyendo reporte con ${report.data.length} días');
@@ -175,7 +177,7 @@ class MonthlyReportTemplate {
         // Información del reporte
         pw.Text('INFORMACIÓN DEL REPORTE', style: subHeaderStyle),
         pw.SizedBox(height: 10),
-        pw.Text('Dispositivo: ${report.deviceId}', style: textStyle),
+        pw.Text('Dispositivo: $deviceName', style: textStyle),
         pw.Text('Periodo: ${monthNames[report.month]} ${report.year}', style: textStyle),
         pw.Text('Generado: ${DateTime.now().toString().substring(0, 16)}', style: textStyle),
         pw.Text('Total de días con datos: ${report.data.length}', style: textStyle),
@@ -255,61 +257,168 @@ class MonthlyReportTemplate {
         pw.Text('DATOS DIARIOS DEL MES', style: subHeaderStyle),
         pw.SizedBox(height: 10),
         
-        // Tabla con todos los datos del mes
+        // Tabla con todos los datos del mes (estilo mejorado con colores)
         pw.Table(
-          border: pw.TableBorder.all(),
+          border: pw.TableBorder.all(color: PdfColors.grey800, width: 1),
           columnWidths: {
-            0: const pw.FlexColumnWidth(1),
+            0: const pw.FlexColumnWidth(0.8),
             1: const pw.FlexColumnWidth(1.2),
             2: const pw.FlexColumnWidth(1.2),
-            3: const pw.FlexColumnWidth(1.5),
+            3: const pw.FlexColumnWidth(1.2),
+            4: const pw.FlexColumnWidth(1),
+            5: const pw.FlexColumnWidth(1),
+            6: const pw.FlexColumnWidth(1),
+            7: const pw.FlexColumnWidth(1),
           },
           children: [
-            // Header de la tabla
+            // Header de la tabla con colores verdes
             pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              decoration: const pw.BoxDecoration(color: PdfColors.green700),
               children: [
                 pw.Padding(
-                  padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Día', style: tableBoldStyle),
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Día',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
                 pw.Padding(
-                  padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Temp. (°C)', style: tableBoldStyle),
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'RadTot\n(MJ/m²)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
                 pw.Padding(
-                  padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Hum. (%)', style: tableBoldStyle),
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'RadPro\n(W/m²)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
                 pw.Padding(
-                  padding: const pw.EdgeInsets.all(8),
-                  child: pw.Text('Rad. (W/m²)', style: tableBoldStyle),
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'RadMax\n(W/m²)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'HR\n(%)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Tmax\n(°C)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Tmin\n(°C)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(6),
+                  child: pw.Text(
+                    'Tpro\n(°C)',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 8, color: PdfColors.white),
+                    textAlign: pw.TextAlign.center,
+                  ),
                 ),
               ],
             ),
-            // Datos de todos los días
-            ...report.data.map((day) => 
-              pw.TableRow(
+            // Datos de todos los días con colores alternados
+            ...report.data.asMap().entries.map((entry) {
+              final index = entry.key;
+              final day = entry.value;
+              final isEven = index % 2 == 0;
+              
+              return pw.TableRow(
+                decoration: pw.BoxDecoration(
+                  color: isEven ? PdfColors.green50 : PdfColors.white,
+                ),
                 children: [
                   pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${day.day}', style: textStyle),
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      '${day.day}',
+                      style: const pw.TextStyle(fontSize: 9),
+                      textAlign: pw.TextAlign.center,
+                    ),
                   ),
                   pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(day.tpro, 1)}', style: textStyle),
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.radTot / 1000, 2), // Convertir a MJ/m²
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
                   ),
                   pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(day.hr, 1)}', style: textStyle),
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.radPro, 1),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
                   ),
                   pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(day.radTot, 0)}', style: textStyle),
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.radMax, 1),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.hr, 0),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.tmax, 1),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.tmin, 1),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(5),
+                    child: pw.Text(
+                      _safeFormatNumber(day.tpro, 1),
+                      style: const pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.center,
+                    ),
                   ),
                 ],
-              )
-            ).toList(),
+              );
+            }).toList(),
           ],
         ),
 
