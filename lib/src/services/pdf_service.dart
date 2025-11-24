@@ -20,13 +20,13 @@ class PdfService {
 
       final pdf = pw.Document();
 
-      // Crear página con manejo mejorado de errores
+      // Crear páginas con paginación automática (igual que el reporte mensual)
       pdf.addPage(
-        pw.Page(
+        pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
           margin: const pw.EdgeInsets.all(40),
           build: (pw.Context context) {
-            return _buildSimpleDailyReport(report);
+            return _buildSimpleDailyReportWidgets(report);
           },
         ),
       );
@@ -125,22 +125,18 @@ class PdfService {
     }
   }
 
-  static pw.Widget _buildSimpleDailyReport(DailyReportModel report) {
+  static List<pw.Widget> _buildSimpleDailyReportWidgets(DailyReportModel report) {
     final textStyle = pw.TextStyle(fontSize: 12);
     final headerStyle = pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold);
     final subHeaderStyle = pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold);
     
-    // Filtrar datos válidos
-    final validRows = report.rows.where((hourData) => 
-      hourData.temperatureAvg > 0 || hourData.humidityAvg > 0 || hourData.solarRadiationAvg > 0
-    ).toList();
+    // Usar todos los datos sin filtrar
+    final validRows = report.rows.toList();
     
     // Ordenar por hora
     validRows.sort((a, b) => a.hour.compareTo(b.hour));
     
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
+    return [
         // Header mejorado
         pw.Container(
           width: double.infinity,
@@ -256,84 +252,63 @@ class PdfService {
         
         pw.SizedBox(height: 20),
         
-        // Datos por hora
-        if (validRows.isNotEmpty) ...[
-          pw.Text('DATOS HORARIOS', style: subHeaderStyle),
-          pw.SizedBox(height: 10),
-          
-          pw.Table(
-            border: pw.TableBorder.all(),
-            columnWidths: {
-              0: const pw.FlexColumnWidth(1),
-              1: const pw.FlexColumnWidth(1.2),
-              2: const pw.FlexColumnWidth(1.2),
-              3: const pw.FlexColumnWidth(1.5),
-            },
-            children: [
-              pw.TableRow(
-                decoration: const pw.BoxDecoration(color: PdfColors.grey300),
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Hora', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Temp. (°C)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Hum. (%)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('Rad. (W/m²)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  ),
-                ],
-              ),
-              ...validRows.take(20).map((hourData) => pw.TableRow(
-                children: [
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text(_formatHourLabel(hourData.hour), style: textStyle),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(hourData.temperatureAvg, 1)}', style: textStyle),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(hourData.humidityAvg, 1)}', style: textStyle),
-                  ),
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.all(8),
-                    child: pw.Text('${_safeFormatNumber(hourData.solarRadiationAvg, 0)}', style: textStyle),
-                  ),
-                ],
-              )).toList(),
-            ],
-          ),
-          
-          if (validRows.length > 20)
-            pw.Text('\nNota: Se muestran solo las primeras 20 lecturas. Total de lecturas: ${validRows.length}', 
-                   style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
-        ] else ...[
-          pw.Text('DATOS HORARIOS', style: subHeaderStyle),
-          pw.SizedBox(height: 10),
-          pw.Container(
-            width: double.infinity,
-            padding: const pw.EdgeInsets.all(20),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: PdfColors.grey),
-              borderRadius: pw.BorderRadius.circular(5),
+        // Datos por hora - TODOS los datos
+        pw.Text('DATOS HORARIOS', style: subHeaderStyle),
+        pw.SizedBox(height: 10),
+        
+        pw.Table(
+          border: pw.TableBorder.all(),
+          columnWidths: {
+            0: const pw.FlexColumnWidth(1),
+            1: const pw.FlexColumnWidth(1.2),
+            2: const pw.FlexColumnWidth(1.2),
+            3: const pw.FlexColumnWidth(1.5),
+          },
+          children: [
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('Hora', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('Temp. (°C)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('Hum. (%)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('Rad. (W/m²)', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ),
+              ],
             ),
-            child: pw.Text(
-              'No se encontraron mediciones válidas para este día.\nVerifique la conectividad del dispositivo o intente con otra fecha.',
-              style: textStyle,
-              textAlign: pw.TextAlign.center,
-            ),
-          ),
-        ],
+            // Datos de todas las horas
+            ...validRows.map((hourData) => pw.TableRow(
+              children: [
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text(hourData.formattedHour, style: textStyle),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('${_safeFormatNumber(hourData.temperatureAvg, 1)}', style: textStyle),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('${_safeFormatNumber(hourData.humidityAvg, 1)}', style: textStyle),
+                ),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.all(8),
+                  child: pw.Text('${_safeFormatNumber(hourData.solarRadiationAvg, 0)}', style: textStyle),
+                ),
+              ],
+            )).toList(),
+          ],
+        ),
 
         pw.Spacer(),
         
@@ -356,8 +331,7 @@ class PdfService {
             ],
           ),
         ),
-      ],
-    );
+    ];
   }
   
   // Método para generar reporte semanal
@@ -564,13 +538,5 @@ class PdfService {
       return '--';
     }
     return value.toStringAsFixed(decimals);
-  }
-  
-  // Helper method for formatting hour labels (12-hour format with am/pm)
-  static String _formatHourLabel(int hour) {
-    if (hour == 0) return '12 am';
-    if (hour < 12) return '$hour am';
-    if (hour == 12) return '12 pm';
-    return '${hour - 12} pm';
   }
 }

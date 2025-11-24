@@ -1005,11 +1005,12 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
   String _getSensorDisplayName(String sensorType) {
     final nameMap = {
       'temperature': 'Temperatura',
-      'humidity': 'Humedad',
+      'humidity': 'Humedad Relativa',
       'solar_radiation': 'Radiación Solar',
       'ph': 'pH del Suelo',
       'ec': 'Conductividad Eléctrica',
       'soil_moisture': 'Humedad del Suelo',
+      'soil_humidity': 'Humedad del Suelo',
       'light': 'Luz',
       'pressure': 'Presión Atmosférica',
       'wind_speed': 'Velocidad del Viento',
