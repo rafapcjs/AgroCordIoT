@@ -44,7 +44,7 @@ class SensorChartsView extends StatelessWidget {
   Widget _buildHumidityChart() {
     return _ChartCard(
       title: 'Humedad (%)',
-      color: Colors.blue,
+      color: Color(0xFF00BCD4),
       icon: Icons.water_drop,
       chart: _buildChart(
         spots: [
@@ -56,7 +56,7 @@ class SensorChartsView extends StatelessWidget {
           const FlSpot(5, 82),
           const FlSpot(6, 87),
         ],
-        color: Colors.blue,
+        color: Color(0xFF00BCD4),
         minY: 80,
         maxY: 95,
         interval: 5,
@@ -67,7 +67,7 @@ class SensorChartsView extends StatelessWidget {
   Widget _buildSolarRadiationChart() {
     return _ChartCard(
       title: 'Radiación Solar (W/m²)',
-      color: Colors.orange,
+      color: Color(0xFFFDD835),
       icon: Icons.wb_sunny,
       chart: _buildChart(
         spots: [
@@ -79,7 +79,7 @@ class SensorChartsView extends StatelessWidget {
           const FlSpot(5, 1200.0),
           const FlSpot(6, 450.0),
         ],
-        color: Colors.orange,
+        color: Color(0xFFFDD835),
         minY: 0,
         maxY: 11000,
         interval: 2000,

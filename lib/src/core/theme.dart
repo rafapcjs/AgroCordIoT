@@ -1,46 +1,47 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryBlue = Color(0xFF2196F3);
-  static const Color primaryDeep = Color(0xFF1565C0);
-  static const Color primaryLight = Color(0xFF64B5F6);
+  // Colores primarios en verde
+  static const Color primaryBlue = Color(0xFF4CAF50); // Verde principal
+  static const Color primaryDeep = Color(0xFF2E7D32); // Verde oscuro
+  static const Color primaryLight = Color(0xFF81C784); // Verde claro
 
-  static const Color secondary = Color(0xFF4CAF50);
+  static const Color secondary = Color(0xFF66BB6A); // Verde secundario
   static const Color secondaryLight = Color(0xFF81C784);
-  static const Color secondaryDark = Color(0xFF2E7D32);
+  static const Color secondaryDark = Color(0xFF388E3C);
 
-  static const Color accent = Color(0xFFFF9800);
-  static const Color accentLight = Color(0xFFFFCC02);
-  static const Color accentDark = Color(0xFFE65100);
+  static const Color accent = Color(0xFF8BC34A); // Verde lima
+  static const Color accentLight = Color(0xFFAED581);
+  static const Color accentDark = Color(0xFF689F38);
 
-  static const Color background = Color(0xFFF8FAFC);
+  static const Color background = Color(0xFFF1F8F4); // Fondo verde muy claro
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceLight = Color(0xFFF1F5F9);
-  static const Color surfaceDark = Color(0xFFE2E8F0);
+  static const Color surfaceLight = Color(0xFFF1F8F4);
+  static const Color surfaceDark = Color(0xFFE8F5E9);
 
-  static const Color textPrimary = Color(0xFF1E293B);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color textTertiary = Color(0xFF94A3B8);
+  static const Color textPrimary = Color(0xFF1B5E20);
+  static const Color textSecondary = Color(0xFF388E3C);
+  static const Color textTertiary = Color(0xFF81C784);
 
-  static const Color success = Color(0xFF10B981);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-  static const Color info = Color(0xFF3B82F6);
+  static const Color success = Color(0xFF4CAF50); // Verde
+  static const Color warning = Color(0xFFFFA726); // Naranja
+  static const Color error = Color(0xFFEF5350); // Rojo
+  static const Color info = Color(0xFF42A5F5); // Azul
 
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryBlue, primaryDeep],
+    colors: [Color(0xFF43A047), Color(0xFF2E7D32)], // Gradiente verde
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient secondaryGradient = LinearGradient(
-    colors: [secondary, secondaryDark],
+    colors: [Color(0xFF66BB6A), Color(0xFF388E3C)], // Gradiente verde secundario
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [accent, accentDark],
+    colors: [Color(0xFF8BC34A), Color(0xFF689F38)], // Gradiente verde lima
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -77,13 +78,15 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     return ThemeData(
-      primarySwatch: Colors.blue,
+      primarySwatch: Colors.green,
       primaryColor: primaryBlue,
       scaffoldBackgroundColor: Colors.white,
       cardColor: surface,
       dividerColor: surfaceDark,
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryBlue,
+        primary: primaryBlue,
+        secondary: secondary,
         surface: Colors.white,
       ),
 

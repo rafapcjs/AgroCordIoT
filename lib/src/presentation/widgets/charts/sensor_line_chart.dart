@@ -50,9 +50,9 @@ class SensorLineChart extends StatelessWidget {
       children: [
         _legendItem('Temperatura (°C)', Colors.red),
         const SizedBox(width: 16),
-        _legendItem('Humedad (%)', Colors.blue),
+        _legendItem('Humedad (%)', Color(0xFF00BCD4)),
         const SizedBox(width: 16),
-        _legendItem('Rad. Solar (W/m²)', Colors.orange),
+        _legendItem('Rad. Solar (W/m²)', Color(0xFFFDD835)),
       ],
     );
   }
@@ -197,7 +197,7 @@ class SensorLineChart extends StatelessWidget {
             const FlSpot(5, 82),
             const FlSpot(6, 87),
           ],
-          color: Colors.blue,
+          color: Color(0xFF00BCD4),
           label: 'Humedad',
         ),
         // Línea de Radiación Solar (valores escalados para visualización)
@@ -214,7 +214,7 @@ class SensorLineChart extends StatelessWidget {
             const FlSpot(5, 20.0),   // Valor estimado
             const FlSpot(6, 10.0),   // Valor estimado
           ],
-          color: Colors.orange,
+          color: Color(0xFFFDD835),
           label: 'Radiación Solar',
         ),
       ],

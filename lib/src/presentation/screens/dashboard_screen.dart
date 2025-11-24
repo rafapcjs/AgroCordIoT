@@ -166,7 +166,7 @@ class DashboardScreen extends StatelessWidget {
                     'Gestiona plantas y configura notificaciones',
                     Icons.local_florist,
                     const LinearGradient(
-                      colors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
+                      colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -204,7 +204,7 @@ class DashboardScreen extends StatelessWidget {
                     'Analiza datos mensuales por dispositivo',
                     Icons.analytics_outlined,
                     const LinearGradient(
-                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      colors: [Color(0xFF66BB6A), Color(0xFF43A047)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -225,7 +225,7 @@ class DashboardScreen extends StatelessWidget {
                     'Analiza sensores internos y externos',
                     Icons.assessment_outlined,
                     const LinearGradient(
-                      colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+                      colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -246,7 +246,7 @@ class DashboardScreen extends StatelessWidget {
                     'Análisis de 7 días por monitor',
                     Icons.calendar_view_week,
                     const LinearGradient(
-                      colors: [Color(0xFF11998e), Color(0xFF38ef7d)],
+                      colors: [Color(0xFF8BC34A), Color(0xFF689F38)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),

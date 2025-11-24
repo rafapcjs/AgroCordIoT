@@ -132,14 +132,14 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
 
   List<Color> _getAvatarColors(String name) {
     final colors = [
-      [const Color(0xFF667eea), const Color(0xFF764ba2)],
-      [const Color(0xFFf093fb), const Color(0xFFf5576c)],
-      [const Color(0xFF4facfe), const Color(0xFF00f2fe)],
-      [const Color(0xFF43e97b), const Color(0xFF38f9d7)],
-      [const Color(0xFFffecd2), const Color(0xFFfcb69f)],
-      [const Color(0xFFa8edea), const Color(0xFFfed6e3)],
-      [const Color(0xFFffeaa7), const Color(0xFFfab1a0)],
-      [const Color(0xFF74b9ff), const Color(0xFF0984e3)],
+      [const Color(0xFF4CAF50), const Color(0xFF388E3C)],
+      [const Color(0xFF66BB6A), const Color(0xFF43A047)],
+      [const Color(0xFF81C784), const Color(0xFF66BB6A)],
+      [const Color(0xFF8BC34A), const Color(0xFF689F38)],
+      [const Color(0xFF9CCC65), const Color(0xFF7CB342)],
+      [const Color(0xFFCDDC39), const Color(0xFFAFB42B)],
+      [const Color(0xFF4DB6AC), const Color(0xFF26A69A)],
+      [const Color(0xFF2E7D32), const Color(0xFF1B5E20)],
     ];
     
     int index = name.hashCode.abs() % colors.length;
@@ -221,7 +221,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [AppTheme.error, Color(0xFFDC2626)],
+                            colors: [Color(0xFFE53935), Color(0xFFC62828)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -294,8 +294,8 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF667eea),
-                Color(0xFF764ba2),
+                Color(0xFF4CAF50),
+                Color(0xFF388E3C),
               ],
             ),
           ),
@@ -305,7 +305,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
               ),
             )
           : Column(
@@ -513,7 +513,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                                                 style: const TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.w600,
-                                                  color: Color(0xFF2d3748),
+                                                  color: Color(0xFF1B5E20),
                                                 ),
                                               ),
                                               const SizedBox(height: 4),
@@ -585,13 +585,13 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                                           children: [
                                             Container(
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFF667eea).withValues(alpha: 0.1),
+                                                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                                                 borderRadius: BorderRadius.circular(8),
                                               ),
                                               child: IconButton(
                                                 icon: const Icon(
                                                   Icons.edit_outlined,
-                                                  color: Color(0xFF667eea),
+                                                  color: Color(0xFF4CAF50),
                                                   size: 20,
                                                 ),
                                                 onPressed: () => _showEditUserModal(user),
@@ -776,7 +776,7 @@ class _CreateUserModalState extends State<CreateUserModal> {
             end: Alignment.bottomRight,
             colors: [
               Colors.white,
-              Color(0xFFf8f9ff),
+              Color(0xFFF1F8E9),
             ],
           ),
         ),
@@ -1159,7 +1159,7 @@ class _EditUserModalState extends State<EditUserModal> {
             end: Alignment.bottomRight,
             colors: [
               Colors.white,
-              Color(0xFFf8f9ff),
+              Color(0xFFF1F8E9),
             ],
           ),
         ),

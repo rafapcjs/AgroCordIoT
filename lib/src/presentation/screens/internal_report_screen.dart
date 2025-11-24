@@ -233,7 +233,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                            colors: [Color(0xFF66BB6A), Color(0xFF43A047)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -361,82 +361,88 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Temperatura Promedio',
-                '${dailyReport?.temperature.tpro.toStringAsFixed(1) ?? '--'}°C',
-                Icons.thermostat,
-                const LinearGradient(colors: [Color(0xFFFF6B6B), Color(0xFFFF8E8E)]),
-                'Hoy',
-                null,
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  'Temperatura Promedio',
+                  '${dailyReport?.temperature.tpro.toStringAsFixed(1) ?? '--'}°C',
+                  Icons.thermostat,
+                  const LinearGradient(colors: [Color(0xFF66BB6A), Color(0xFF81C784)]),
+                  'Hoy',
+                  null,
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                'Temp. Máxima',
-                '${dailyReport?.temperature.tmax.toStringAsFixed(1) ?? '--'}°C',
-                Icons.trending_up,
-                const LinearGradient(colors: [Color(0xFFFF5722), Color(0xFFFF7043)]),
-                'Máx',
-                true,
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  'Temp. Máxima',
+                  '${dailyReport?.temperature.tmax.toStringAsFixed(1) ?? '--'}°C',
+                  Icons.trending_up,
+                  const LinearGradient(colors: [Color(0xFF43A047), Color(0xFF66BB6A)]),
+                  'Máx',
+                  true,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Temp. Mínima',
-                '${dailyReport?.temperature.tmin.toStringAsFixed(1) ?? '--'}°C',
-                Icons.trending_down,
-                const LinearGradient(colors: [Color(0xFF2196F3), Color(0xFF42A5F5)]),
-                'Mín',
-                false,
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  'Temp. Mínima',
+                  '${dailyReport?.temperature.tmin.toStringAsFixed(1) ?? '--'}°C',
+                  Icons.trending_down,
+                  const LinearGradient(colors: [Color(0xFF81C784), Color(0xFF9CCC65)]),
+                  'Mín',
+                  false,
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                'Humedad Promedio',
-                '${dailyReport?.humidity.hpro.toStringAsFixed(1) ?? '--'}%',
-                Icons.water_drop,
-                const LinearGradient(colors: [Color(0xFF4ECDC4), Color(0xFF44A08D)]),
-                'Ambiente',
-                null,
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  'Humedad Promedio',
+                  '${dailyReport?.humidity.hpro.toStringAsFixed(1) ?? '--'}%',
+                  Icons.water_drop,
+                  const LinearGradient(colors: [Color(0xFF4DB6AC), Color(0xFF26A69A)]),
+                  'Ambiente',
+                  null,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Radiación Total',
-                '${dailyReport?.radiation.radTot.toStringAsFixed(0) ?? '--'} W/m²',
-                Icons.wb_sunny,
-                const LinearGradient(colors: [Color(0xFFFFD93D), Color(0xFFFF8C42)]),
-                'Total',
-                null,
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  'Radiación Total',
+                  '${dailyReport?.radiation.radTot.toStringAsFixed(0) ?? '--'} W/m²',
+                  Icons.wb_sunny,
+                  const LinearGradient(colors: [Color(0xFF9CCC65), Color(0xFF8BC34A)]),
+                  'Total',
+                  null,
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                'Radiación Máxima',
-                '${dailyReport?.radiation.radMax.toStringAsFixed(0) ?? '--'} W/m²',
-                Icons.brightness_high,
-                const LinearGradient(colors: [Color(0xFFFFC107), Color(0xFFFFB300)]),
-                'Pico',
-                true,
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  'Radiación Máxima',
+                  '${dailyReport?.radiation.radMax.toStringAsFixed(0) ?? '--'} W/m²',
+                  Icons.brightness_high,
+                  const LinearGradient(colors: [Color(0xFFCDDC39), Color(0xFFAFB42B)]),
+                  'Pico',
+                  true,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -578,7 +584,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
                   'Promedio: ${dailyReport?.temperature.tpro.toStringAsFixed(1)}°C',
                   'Rango: ${dailyReport?.temperature.tmin.toStringAsFixed(1)}°C - ${dailyReport?.temperature.tmax.toStringAsFixed(1)}°C',
                   Icons.thermostat,
-                  const Color(0xFFFF6B6B),
+                  const Color(0xFF66BB6A),
                 ),
                 const Divider(color: AppTheme.textSecondary, height: 24),
                 _buildSummaryRow(
@@ -586,7 +592,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
                   'Promedio: ${dailyReport?.humidity.hpro.toStringAsFixed(1)}%',
                   'Condiciones ambientales óptimas',
                   Icons.water_drop,
-                  const Color(0xFF4ECDC4),
+                  const Color(0xFF4DB6AC),
                 ),
                 const Divider(color: AppTheme.textSecondary, height: 24),
                 _buildSummaryRow(
@@ -594,7 +600,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
                   'Promedio: ${dailyReport?.radiation.radPro.toStringAsFixed(0)} W/m²',
                   'Total: ${dailyReport?.radiation.radTot.toStringAsFixed(0)} W/m² | Máx: ${dailyReport?.radiation.radMax.toStringAsFixed(0)} W/m²',
                   Icons.wb_sunny,
-                  const Color(0xFFFFD93D),
+                  const Color(0xFF9CCC65),
                 ),
               ],
             ),
@@ -720,9 +726,9 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildLegendItem('Temperatura', const Color(0xFFFF6B6B), '°C'),
-                        _buildLegendItem('Humedad', const Color(0xFF4ECDC4), '%'),
-                        _buildLegendItem('Radiación', const Color(0xFFFFD93D), 'W/m²'),
+                        _buildLegendItem('Temperatura', const Color(0xFF66BB6A), '°C'),
+                        _buildLegendItem('Humedad', const Color(0xFF4DB6AC), '%'),
+                        _buildLegendItem('Radiación', const Color(0xFF9CCC65), 'W/m²'),
                       ],
                     ),
                   ],
@@ -804,7 +810,7 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF1976D2), Color(0xFF2196F3)],
+                colors: [Color(0xFF43A047), Color(0xFF66BB6A)],
               ),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),

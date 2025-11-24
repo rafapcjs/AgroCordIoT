@@ -223,7 +223,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                            colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -520,7 +520,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                  colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -567,7 +567,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                   _buildDataSection(
                     'Radiación Solar',
                     Icons.wb_sunny_outlined,
-                    const Color(0xFFFFA726),
+                    const Color(0xFF9CCC65),
                     [
                       _buildDataRow('Radiación Total', '${data.radTot.toStringAsFixed(2)} MJ/m²'),
                       _buildDataRow('Radiación Promedio', '${data.radPro.toStringAsFixed(2)} W/m²'),
@@ -580,7 +580,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                   _buildDataSection(
                     'Temperatura',
                     Icons.thermostat_outlined,
-                    const Color(0xFFEF5350),
+                    const Color(0xFF66BB6A),
                     [
                       _buildDataRow('Temperatura Máxima', '${data.tmax.toStringAsFixed(1)}°C'),
                       _buildDataRow('Temperatura Mínima', '${data.tmin.toStringAsFixed(1)}°C'),
@@ -593,7 +593,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                   _buildDataSection(
                     'Humedad Relativa',
                     Icons.water_drop_outlined,
-                    const Color(0xFF42A5F5),
+                    const Color(0xFF4DB6AC),
                     [
                       _buildDataRow('Humedad Relativa', '${data.hr.toStringAsFixed(1)}%'),
                     ],

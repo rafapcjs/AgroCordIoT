@@ -165,7 +165,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
               Expanded(child: Text(message)),
             ],
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.green[600],
           duration: const Duration(seconds: 4),
         ),
       );
@@ -196,7 +196,7 @@ class SimplePdfButton extends StatelessWidget {
       dailyReport: dailyReport,
       icon: icon,
       text: text,
-      backgroundColor: color ?? Colors.red[700],
+      backgroundColor: color ?? Colors.green[700],
       foregroundColor: Colors.white,
     );
   }
@@ -225,7 +225,7 @@ class FloatingPdfButton extends StatelessWidget {
         }
       },
       tooltip: tooltipMessage,
-      backgroundColor: Colors.red[700],
+      backgroundColor: Colors.green[700],
       child: const Icon(Icons.picture_as_pdf, color: Colors.white),
     );
   }

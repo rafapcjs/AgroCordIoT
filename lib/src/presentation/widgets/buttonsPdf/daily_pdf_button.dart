@@ -245,7 +245,7 @@ class _DailyPdfButtonState extends State<DailyPdfButton> {
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: isEnabled 
-              ? widget.color ?? Colors.red[700] 
+              ? widget.color ?? Colors.green[700] 
               : AppTheme.surfaceDark,
           foregroundColor: isEnabled ? Colors.white : AppTheme.textSecondary,
           elevation: isEnabled ? 4 : 0,
@@ -262,12 +262,12 @@ class _DailyPdfButtonState extends State<DailyPdfButton> {
               return AppTheme.surfaceDark;
             }
             if (states.contains(WidgetState.pressed)) {
-              return (widget.color ?? Colors.red[700])!.withValues(alpha: 0.8);
+              return (widget.color ?? Colors.green[700])!.withValues(alpha: 0.8);
             }
             if (states.contains(WidgetState.hovered)) {
-              return (widget.color ?? Colors.red[700])!.withValues(alpha: 0.9);
+              return (widget.color ?? Colors.green[700])!.withValues(alpha: 0.9);
             }
-            return widget.color ?? Colors.red[700]!;
+            return widget.color ?? Colors.green[700]!;
           }),
         ),
       ),
@@ -294,7 +294,7 @@ class DailyPdfOptionsButton extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFe74c3c), Color(0xFFc0392b)],
+            colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
           ),
           borderRadius: BorderRadius.circular(8),
         ),

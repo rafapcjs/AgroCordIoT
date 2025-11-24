@@ -65,7 +65,7 @@ class DashboardUserPage extends StatelessWidget {
               title: 'Sensores en Tiempo',
               subtitle: 'Monitorea datos de',
               icon: Icons.sensors,
-              gradientColors: [const Color(0xFFFF9800), const Color(0xFFFF6F00)],
+              gradientColors: [const Color(0xFF66BB6A), const Color(0xFF43A047)],
               onTap: () {
                 Navigator.of(context).pushNamed(
                   '/sensors/dashboard',
@@ -78,7 +78,7 @@ class DashboardUserPage extends StatelessWidget {
               title: 'Reporte Mensual',
               subtitle: 'Analiza datos mensuales',
               icon: Icons.bar_chart,
-              gradientColors: [const Color(0xFF7E57C2), const Color(0xFF5E35B1)],
+              gradientColors: [const Color(0xFF81C784), const Color(0xFF66BB6A)],
               onTap: () {
                 Navigator.of(context).pushNamed(
                   '/reports/monthly',
@@ -91,7 +91,7 @@ class DashboardUserPage extends StatelessWidget {
               title: 'Reporte Diario',
               subtitle: 'Analiza sensores internos y',
               icon: Icons.bar_chart_outlined,
-              gradientColors: [const Color(0xFFEC407A), const Color(0xFFD81B60)],
+              gradientColors: [const Color(0xFF4CAF50), const Color(0xFF388E3C)],
               onTap: () {
                 Navigator.of(context).pushNamed(
                   '/reports/internal',
@@ -107,7 +107,7 @@ class DashboardUserPage extends StatelessWidget {
               title: 'Reporte Semanal',
               subtitle: 'Análisis de 7 días por',
               icon: Icons.calendar_view_week,
-              gradientColors: [const Color(0xFF26A69A), const Color(0xFF00897B)],
+              gradientColors: [const Color(0xFF8BC34A), const Color(0xFF689F38)],
               onTap: () {
                 Navigator.of(context).pushNamed(
                   '/reports/weekly',
