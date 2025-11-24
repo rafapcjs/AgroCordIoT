@@ -367,16 +367,14 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: isInternal 
-                                  ? [Colors.blue[400]!, Colors.blue[600]!]
-                                  : [Colors.orange[400]!, Colors.orange[600]!],
+                                colors: [Colors.green[400]!, Colors.green[600]!],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: (isInternal ? Colors.blue : Colors.orange).withOpacity(0.3),
+                                  color: Colors.green.withOpacity(0.3),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -390,26 +388,13 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
                           ),
                           const SizedBox(width: 14),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  entry.value,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                Text(
-                                  entry.key,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              entry.value,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                           if (selectedDevice == entry.key)
@@ -690,7 +675,7 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blue[700]!, Colors.blue[500]!],
+              colors: [Colors.green[700]!, Colors.green[500]!],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

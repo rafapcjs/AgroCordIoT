@@ -72,15 +72,20 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> login(String username, String password) async {
     try {
+      debugPrint('🔐 Iniciando login para: $username');
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
 
       final authModel = await _authRepository.authenticate(username, password);
+      debugPrint('✅ Autenticación exitosa, token recibido');
       
       if (!JwtDecoder.isExpired(authModel.accessToken)) {
         _accessToken = authModel.accessToken;
         await _loadUserFromToken(authModel.accessToken);
+        
+        debugPrint('👤 Usuario actual: ${_currentUser?.name} ${_currentUser?.lastName}');
+        debugPrint('🎭 Rol del usuario: ${_currentUser?.role}');
         
         // Permitir acceso tanto a admin como a usuarios normales
         // Ya no se valida solo admin, cada uno tendrá su dashboard correspondiente
@@ -91,17 +96,20 @@ class AuthProvider extends ChangeNotifier {
         }
 
         _state = AuthState.authenticated;
+        debugPrint('✅ Login completado - Estado: authenticated');
         notifyListeners();
         return true;
       } else {
         throw AuthenticationException('Token expirado');
       }
     } on AppException catch (e) {
+      debugPrint('❌ Error de autenticación: ${e.message}');
       _state = AuthState.error;
       _errorMessage = e.message;
       notifyListeners();
       return false;
     } catch (e) {
+      debugPrint('❌ Error inesperado: ${e.toString()}');
       _state = AuthState.error;
       _errorMessage = 'Error inesperado: ${e.toString()}';
       notifyListeners();
@@ -110,23 +118,35 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    debugPrint('🔓 AuthProvider: Iniciando logout...');
+    
     try {
+      // Limpiar storage
       await _storage.delete(key: _tokenKey);
       await _storage.delete(key: _userKey);
+      debugPrint('✅ Storage limpiado');
     } catch (e) {
-      debugPrint('Error clearing storage: $e');
+      debugPrint('❌ Error limpiando storage: $e');
     }
 
+    // Limpiar todo
     _accessToken = null;
     _currentUser = null;
     _errorMessage = null;
     _state = AuthState.unauthenticated;
+    
+    debugPrint('✅ Logout completado - Estado: unauthenticated');
     notifyListeners();
   }
 
   Future<void> _loadUserFromToken(String token) async {
     try {
       final decodedToken = JwtDecoder.decode(token);
+      
+      debugPrint('🔍 Token decodificado:');
+      debugPrint('  - sub: ${decodedToken['sub']}');
+      debugPrint('  - name: ${decodedToken['name']}');
+      debugPrint('  - role: ${decodedToken['role']}');
       
       _currentUser = UserModel(
         id: decodedToken['sub']?.toString() ?? '',
@@ -139,7 +159,10 @@ class AuthProvider extends ChangeNotifier {
         createdAt: decodedToken['createdAt']?.toString() ?? '',
         updatedAt: decodedToken['updatedAt']?.toString() ?? '',
       );
+      
+      debugPrint('✅ Usuario cargado desde token: ${_currentUser!.name} ${_currentUser!.lastName} - Role: ${_currentUser!.role}');
     } catch (e) {
+      debugPrint('❌ Error al procesar token: $e');
       throw AuthenticationException('Error al procesar token de usuario');
     }
   }
@@ -166,8 +189,11 @@ class AuthProvider extends ChangeNotifier {
   // Método para refrescar la información del usuario desde el servidor
   Future<void> refreshCurrentUser() async {
     if (_accessToken == null) {
-      debugPrint('❌ Error: No hay token de acceso');
-      throw Exception('No hay token de acceso disponible');
+      debugPrint('⚠️ No hay token de acceso, no se puede refrescar usuario');
+      _state = AuthState.unauthenticated;
+      _currentUser = null;
+      notifyListeners();
+      return;
     }
     
     try {
@@ -195,7 +221,8 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       } catch (tokenError) {
         debugPrint('❌ Error loading user from token: $tokenError');
-        throw Exception('No se pudo cargar la información del usuario: $e');
+        // En caso de error, cerrar sesión
+        await logout();
       }
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../presentation/widgets/user_info_widget.dart';
 import '../providers/auth_provider.dart';
+import '../presentation/screens/login_screen.dart';
 
 class DashboardUserPage extends StatelessWidget {
   final String accessToken;
@@ -35,8 +36,17 @@ class DashboardUserPage extends StatelessWidget {
         actions: [
           UserInfoWidget(
             accessToken: accessToken,
-            onLogout: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
+            onLogout: () async {
+              // Ejecutar logout
+              await Provider.of<AuthProvider>(context, listen: false).logout();
+              
+              // Navegar al login reemplazando toda la pila
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
             },
           ),
           const SizedBox(width: 8),

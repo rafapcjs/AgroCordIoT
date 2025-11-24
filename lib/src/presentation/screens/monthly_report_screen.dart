@@ -26,8 +26,8 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
 
   final List<String> _devices = ['ESP32_1', 'ESP32_2'];
   final Map<String, String> _deviceLabels = {
-    'ESP32_1': 'Interno',
-    'ESP32_2': 'Externo',
+    'ESP32_1': 'Monitor Interno',
+    'ESP32_2': 'Monitor Externo',
   };
 
   @override

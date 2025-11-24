@@ -7,6 +7,7 @@ import 'sensor_dashboard_screen.dart';
 import 'internal_report_screen.dart';
 import 'monthly_report_screen.dart';
 import 'test_notifications_screen.dart';
+import 'login_screen.dart';
 import '../../pages/weekly_report_page.dart';
 import '../widgets/user_info_widget.dart';
 import '../../providers/auth_provider.dart';
@@ -55,8 +56,17 @@ class DashboardScreen extends StatelessWidget {
           ),
           UserInfoWidget(
             accessToken: accessToken,
-            onLogout: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
+            onLogout: () async {
+              // Ejecutar logout
+              await Provider.of<AuthProvider>(context, listen: false).logout();
+              
+              // Navegar al login reemplazando toda la pila
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
             },
           ),
           const SizedBox(width: 8),

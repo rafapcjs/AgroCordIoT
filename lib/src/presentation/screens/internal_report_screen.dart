@@ -30,8 +30,8 @@ class _InternalReportScreenState extends State<InternalReportScreen> {
   late String selectedDevice;
   static const List<String> devices = ['ESP32_1', 'ESP32_2'];
   static const Map<String, String> deviceLabels = {
-    'ESP32_1': 'Interno',
-    'ESP32_2': 'Externo',
+    'ESP32_1': 'Monitor Interno',
+    'ESP32_2': 'Monitor Externo',
   };
 
   String get selectedDeviceLabel => deviceLabels[selectedDevice] ?? selectedDevice;

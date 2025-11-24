@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -64,5 +61,14 @@ class DefaultFirebaseOptions {
     projectId: 'monitoring-system-f50e6',
     storageBucket: 'monitoring-system-f50e6.firebasestorage.app',
     iosBundleId: 'com.example.iot',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCSKPLmyQb-b8gfsShLSzbMBPQ10cHqNdc',
+    appId: '1:350176906989:web:b7d8433bdfa0641ca406e4',
+    messagingSenderId: '350176906989',
+    projectId: 'monitoring-system-f50e6',
+    storageBucket: 'monitoring-system-f50e6.firebasestorage.app',
+    authDomain: 'monitoring-system-f50e6.firebaseapp.com',
   );
 }

@@ -75,6 +75,11 @@ class FCMService {
 
   /// Inicializar notificaciones locales
   Future<void> _initializeLocalNotifications() async {
+    if (kIsWeb) {
+      // En web no usamos notificaciones locales
+      return;
+    }
+
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -421,6 +426,14 @@ class FCMService {
     } else {
       bigText = body;
       summaryText = body;
+    }
+
+    // Si es web, no mostrar notificaciones (solo mobile)
+    if (kIsWeb) {
+      if (kDebugMode) {
+        print('ℹ️ Web: Notificación recibida pero no se muestra: $title - $summaryText');
+      }
+      return;
     }
 
     // Determinar color según tipo de umbral

@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -22,14 +23,16 @@ import 'src/services/fcm_service.dart';
 import 'src/services/websocket_service.dart';
 import 'src/presentation/screens/reset_password_screen.dart';
 
-/// Background message handler - must be a top-level function
+/// Background message handler - must be a top-level function (solo para mobile)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  print('🔔 Background message: ${message.messageId}');
-  print('📦 Data: ${message.data}');
+  if (!kIsWeb) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('🔔 Background message: ${message.messageId}');
+    print('📦 Data: ${message.data}');
+  }
 }
 
 Future<void> main() async {
@@ -40,51 +43,57 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Registrar el handler de mensajes en background
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // Registrar el handler de mensajes en background (solo mobile)
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
 
-  // Inicializar Deep Links
-  DeepLinkService.initialize();
+  // Inicializar Deep Links (solo mobile)
+  if (!kIsWeb) {
+    DeepLinkService.initialize();
+  }
 
   // Verificar onboarding
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
 
-  // Inicializar servicios de notificaciones
-  await FCMService().initialize();
+  // Inicializar servicios solo en mobile para evitar errores en web
+  if (!kIsWeb) {
+    try {
+      await FCMService().initialize();
+    } catch (e) {
+      print('Error inicializando FCM: $e');
+    }
+  }
 
-  // Conectar WebSocket y configurar handlers
+  // Conectar WebSocket en background (no bloqueante)
   final wsService = WebSocketService();
-  final fcmService = FCMService();
+  final fcmService = kIsWeb ? null : FCMService();
 
-  // Configurar callback para mostrar notificaciones cuando lleguen mensajes
   wsService.onMessageReceived = (data) async {
     print('📨 WebSocket message received: $data');
-
-    // Mostrar notificación local cuando llegue un mensaje
-    if (data['event'] == 'sensorAlert') {
-      await fcmService.showNotificationFromData(data);
+    if (!kIsWeb && data['event'] == 'sensorAlert' && fcmService != null) {
+      try {
+        await fcmService.showNotificationFromData(data);
+      } catch (e) {
+        print('Error mostrando notificación: $e');
+      }
     }
   };
 
-  wsService.onConnected = () {
-    print('✅ WebSocket connected');
-  };
+  wsService.onConnected = () => print('✅ WebSocket connected');
+  wsService.onDisconnected = () => print('⚠️ WebSocket disconnected');
+  wsService.onError = (error) => print('❌ WebSocket error: $error');
 
-  wsService.onDisconnected = () {
-    print('⚠️ WebSocket disconnected');
-  };
+  // Conectar en background sin bloquear
+  wsService.connect().catchError((e) => print('Error WebSocket: $e'));
 
-  wsService.onError = (error) {
-    print('❌ WebSocket error: $error');
-  };
-
-  await wsService.connect();
-
-  // Si hay token FCM, registrarlo también por WebSocket
-  final fcmToken = fcmService.currentToken;
-  if (fcmToken != null) {
-    await wsService.registerToken(fcmToken);
+  // Registrar token solo en mobile
+  if (!kIsWeb && fcmService != null) {
+    final fcmToken = fcmService.currentToken;
+    if (fcmToken != null) {
+      wsService.registerToken(fcmToken).catchError((e) => print('Error token: $e'));
+    }
   }
 
   runApp(MyApp(onboardingCompleted: onboardingCompleted));
@@ -176,6 +185,11 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
+        // Debug log para tracking
+        debugPrint('🔄 AuthWrapper state: ${authProvider.state}');
+        debugPrint('🔄 Usuario: ${authProvider.currentUser?.name ?? "null"}');
+        debugPrint('🔄 Rol: ${authProvider.currentUser?.role ?? "null"}');
+        
         switch (authProvider.state) {
           case AuthState.loading:
           case AuthState.initial:
@@ -189,18 +203,25 @@ class AuthWrapper extends StatelessWidget {
             // Verificar el rol del usuario y redirigir al dashboard correspondiente
             final userRole = authProvider.currentUser?.role ?? '';
             
+            debugPrint('✅ Usuario autenticado - Role: $userRole');
+            
             if (userRole == 'admin') {
+              debugPrint('📍 Redirigiendo a DashboardScreen (Admin)');
               return DashboardScreen(
                 accessToken: authProvider.accessToken ?? '',
               );
             } else {
               // Para usuarios normales, mostrar el dashboard de usuario
+              debugPrint('📍 Redirigiendo a DashboardUserPage (User)');
               return DashboardUserPage(
                 accessToken: authProvider.accessToken ?? '',
               );
             }
           case AuthState.unauthenticated:
+            debugPrint('🚪 Usuario no autenticado - Mostrando LoginScreen');
+            return const LoginScreen();
           case AuthState.error:
+            debugPrint('❌ Error de autenticación - Mostrando LoginScreen');
             return const LoginScreen();
         }
       },

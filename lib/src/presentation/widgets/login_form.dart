@@ -4,6 +4,7 @@ import '../../core/theme.dart';
 import '../../core/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../screens/dashboard_screen.dart';
+import '../../pages/dashboard_user_page.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -37,13 +38,32 @@ class _LoginFormState extends State<LoginForm> {
     );
 
     if (authProvider.isAuthenticated) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => DashboardScreen(
-            accessToken: authProvider.accessToken!,
-          ),
-        ),
-      );
+      // Redirigir según el rol del usuario
+      final userRole = authProvider.currentUser?.role ?? '';
+      
+      debugPrint('✅ Login exitoso - Role: $userRole');
+      
+      if (mounted) {
+        if (userRole == 'admin') {
+          // Usuario admin -> Dashboard Admin
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => DashboardScreen(
+                accessToken: authProvider.accessToken!,
+              ),
+            ),
+          );
+        } else {
+          // Usuario normal -> Dashboard User
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => DashboardUserPage(
+                accessToken: authProvider.accessToken!,
+              ),
+            ),
+          );
+        }
+      }
     }
   }
 

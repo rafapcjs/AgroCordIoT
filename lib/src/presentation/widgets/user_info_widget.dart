@@ -159,6 +159,17 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
       // Forzar refresh del AuthProvider para obtener información actualizada
       debugPrint('🔄 UserInfoWidget: Refrescando información del usuario...');
+      
+      // Verificar que hay token antes de intentar refrescar
+      if (authProvider.accessToken == null) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          setState(() => _isLoading = false);
+        }
+        debugPrint('❌ UserInfoWidget: No hay token, usuario no autenticado');
+        return;
+      }
+      
       await authProvider.refreshCurrentUser();
       
       // Cerrar modal de carga
@@ -460,7 +471,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Cerrar modal primero
+                    debugPrint('🚪 Botón logout presionado');
+                    // NO cerrar el modal aquí, dejarlo abierto para mostrar el diálogo de confirmación
                     _showLogoutConfirmation();
                   },
                   icon: const Icon(
@@ -575,7 +587,8 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   void _showLogoutConfirmation() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -593,30 +606,37 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
               child: const Text(
                 'Cancelar',
                 style: TextStyle(color: AppTheme.textSecondary),
               ),
             ),
-            GradientButton(
-              text: 'Cerrar Sesión',
-              onPressed: () {
-                // Cerrar diálogo primero
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.error,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              onPressed: () async {
+                // 1. Cerrar el diálogo de confirmación
+                Navigator.of(dialogContext).pop();
+                
+                // 2. Cerrar el modal de información
                 Navigator.of(context).pop();
                 
-                // Ejecutar logout que limpia token, user data y cambia el estado a unauthenticated
-                widget.onLogout();
+                // 3. Pequeño delay para que se cierren las animaciones
+                await Future.delayed(const Duration(milliseconds: 150));
                 
-                // El AuthWrapper en main.dart detectará el cambio de estado automáticamente
-                // y mostrará el LoginScreen porque authProvider.state será AuthState.unauthenticated
+                // 4. Ejecutar logout
+                widget.onLogout();
               },
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: const Text('Cerrar Sesión'),
             ),
           ],
         );

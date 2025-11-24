@@ -281,9 +281,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
 
   Widget _buildDeviceCard(String deviceId) {
     final sensorData = _devicesData[deviceId] ?? [];
-    final displayName = deviceId == 'ESP32_1'
-        ? 'Ambiente Interno'
-        : 'Ambiente Externo';
+    final displayName = deviceId == 'ESP32_1' ? 'Monitor Interno' : 'Monitor Externo';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -299,9 +297,7 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: deviceId == 'ESP32_1'
-                    ? AppTheme.primaryGradient
-                    : AppTheme.secondaryGradient,
+                gradient: AppTheme.secondaryGradient,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -332,14 +328,6 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          deviceId,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
