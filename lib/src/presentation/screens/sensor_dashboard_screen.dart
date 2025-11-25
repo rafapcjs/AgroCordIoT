@@ -563,14 +563,6 @@ class _SensorDashboardScreenState extends State<SensorDashboardScreen> {
                   color: config.color.withValues(alpha: 0.6),
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                'Sin lectura reciente',
-                style: TextStyle(
-                  fontSize: 8,
-                  color: AppTheme.textTertiary.withValues(alpha: 0.7),
-                ),
-              ),
             ],
           ],
         ),
